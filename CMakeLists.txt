@@ -20,13 +20,13 @@ add_executable(${PROJECT_NAME}
     src/mainwindow.cpp
     src/mainwindow.h
     src/mainwindow.ui
-    src/dlgsettings.cpp
-    src/dlgsettings.h
-    src/dlgsettings.ui
-    src/wgtamplitude.cpp
-    src/wgtamplitude.h
-    src/wgtfrequencyviewer.cpp
-    src/wgtfrequencyviewer.h
-    )
+    src/dialogsettings.cpp
+    src/dialogsettings.h
+    src/dialogsettings.ui
+    src/widgetamplitude.cpp
+    src/widgetamplitude.h
+    src/widgetfrequencyviewer.cpp
+    src/widgetfrequencyviewer.h
+    src/resource_file.qrc)
 
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
