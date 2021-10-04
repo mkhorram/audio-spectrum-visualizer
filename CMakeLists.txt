@@ -19,6 +19,14 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
     src/mainwindow.cpp
     src/mainwindow.h
-    src/mainwindow.ui)
+    src/mainwindow.ui
+    src/dlgsettings.cpp
+    src/dlgsettings.h
+    src/dlgsettings.ui
+    src/wgtamplitude.cpp
+    src/wgtamplitude.h
+    src/wgtfrequencyviewer.cpp
+    src/wgtfrequencyviewer.h
+    )
 
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
