@@ -18,9 +18,15 @@ MainWindow::MainWindow(QWidget *parent) :
     splitter->addWidget(m_wgtAmplitude);
     splitter->addWidget(m_wgtFrequencyViewer);
     this->setCentralWidget( splitter );
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_tbSettings_clicked()
+{
+    (m_dlgSettings.isVisible())?  m_dlgSettings.hide() : m_dlgSettings.show();
 }

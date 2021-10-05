@@ -17,8 +17,8 @@
    <widget class="QToolButton" name="tbSettings">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>50</y>
+      <x>10</x>
+      <y>10</y>
       <width>25</width>
       <height>19</height>
      </rect>
@@ -35,7 +35,7 @@
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>50</y>
+      <y>10</y>
       <width>25</width>
       <height>19</height>
      </rect>
@@ -51,8 +51,8 @@
    <widget class="QToolButton" name="tbStop">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>50</y>
+      <x>120</x>
+      <y>10</y>
       <width>25</width>
       <height>19</height>
      </rect>
@@ -68,8 +68,8 @@
    <widget class="QToolButton" name="tbPause">
     <property name="geometry">
      <rect>
-      <x>100</x>
-      <y>50</y>
+      <x>90</x>
+      <y>10</y>
       <width>25</width>
       <height>19</height>
      </rect>
