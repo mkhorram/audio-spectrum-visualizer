@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QSplitter>
+#include <QList>
+
+#include <QPushButton>
 
 #include "dialogsettings.h"
 #include "widgetamplitude.h"

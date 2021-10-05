@@ -12,12 +12,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->toolBar->addWidget(ui->tbPause);
     ui->toolBar->addWidget(ui->tbStop);
 
-    QSplitter *splitter = new QSplitter(this);
+    QSplitter *splitter = new QSplitter(Qt::Horizontal, this);
     m_wgtAmplitude = new WidgetAmplitude(this);
     m_wgtFrequencyViewer = new WidgetFrequencyViewer(this);
     splitter->addWidget(m_wgtAmplitude);
     splitter->addWidget(m_wgtFrequencyViewer);
+    splitter->setStretchFactor(0,4);
+    splitter->setStretchFactor(1,1);
     this->setCentralWidget( splitter );
+
 
 }
 
