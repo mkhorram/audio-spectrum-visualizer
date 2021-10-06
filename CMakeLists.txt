@@ -14,6 +14,8 @@ endif()
 
 find_package(Qt5 COMPONENTS Widgets Multimedia REQUIRED)
 
+set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_RELEASE} -fprofile-arcs -ftest-coverage")
+
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/mainwindow.cpp
