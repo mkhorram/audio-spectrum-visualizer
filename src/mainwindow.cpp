@@ -20,8 +20,6 @@ MainWindow::MainWindow(QWidget *parent) :
     splitter->setStretchFactor(0,4);
     splitter->setStretchFactor(1,1);
     this->setCentralWidget( splitter );
-
-
 }
 
 MainWindow::~MainWindow()
@@ -32,4 +30,11 @@ MainWindow::~MainWindow()
 void MainWindow::on_tbSettings_clicked()
 {
     (m_dlgSettings.isVisible())?  m_dlgSettings.hide() : m_dlgSettings.show();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if (m_dlgSettings.isVisible())
+        m_dlgSettings.close();
+    event->accept();
 }

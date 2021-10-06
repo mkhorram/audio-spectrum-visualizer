@@ -25,6 +25,7 @@ public:
 
 private slots:
     void on_tbSettings_clicked();
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::MainWindow *ui;
