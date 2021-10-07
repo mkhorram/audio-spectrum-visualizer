@@ -2,6 +2,7 @@
 #define DIALOGSETTINGS_H
 
 #include <QDialog>
+#include <QStringList>
 #include <QtMultimedia/QAudio>
 #include <QtMultimedia/QAudioDeviceInfo>
 
@@ -24,6 +25,9 @@ private slots:
 
 private:
     Ui::DialogSettings *ui;
+
+    QAudioDeviceInfo m_deviceInfo;
+    QAudioFormat m_settings;
 };
 
 #endif // DIALOGSETTINGS_H
