@@ -9,7 +9,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->toolBar->addWidget(ui->tbSettings);
     ui->toolBar->addSeparator();
     ui->toolBar->addWidget(ui->tbStart);
-    ui->toolBar->addWidget(ui->tbPause);
     ui->toolBar->addWidget(ui->tbStop);
 
     QSplitter *splitter = new QSplitter(Qt::Horizontal, this);
@@ -20,6 +19,10 @@ MainWindow::MainWindow(QWidget *parent) :
     splitter->setStretchFactor(0,4);
     splitter->setStretchFactor(1,1);
     this->setCentralWidget( splitter );
+
+    connect(&m_dlgSettings, &DialogSettings::DialogSettingsClosed, this, &MainWindow::dialogueSettingsClosed);
+
+    ChangeWorkingState(WorkState::Stopped);
 }
 
 MainWindow::~MainWindow()
@@ -27,14 +30,43 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_tbSettings_clicked()
-{
-    (m_dlgSettings.isVisible())?  m_dlgSettings.hide() : m_dlgSettings.show();
-}
-
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (m_dlgSettings.isVisible())
         m_dlgSettings.close();
     event->accept();
+}
+
+void MainWindow::on_tbSettings_clicked()
+{
+    ChangeWorkingState(WorkState::ShowingSettingsDialogue);
+    (m_dlgSettings.isVisible())?  m_dlgSettings.hide() : m_dlgSettings.show();
+}
+
+void MainWindow::dialogueSettingsClosed(QCloseEvent *event)
+{
+    ChangeWorkingState(WorkState::Stopped);
+}
+
+void MainWindow::ChangeWorkingState(WorkState workingState)
+{
+    if (workingState == WorkState::ShowingSettingsDialogue ||
+            workingState == WorkState::NoSettings)
+    {
+        m_workingState = WorkState::Running;
+        ui->tbStart->setEnabled(false);
+        ui->tbStop->setEnabled(false);
+    }
+    else if (workingState == WorkState::Stopped)
+    {
+        m_workingState = WorkState::Stopped;
+        ui->tbStart->setEnabled(true);
+        ui->tbStop->setEnabled(false);
+    }
+    else
+    {
+        m_workingState = WorkState::Running;
+        ui->tbStart->setEnabled(false);
+        ui->tbStop->setEnabled(true);
+    }
 }

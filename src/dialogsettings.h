@@ -20,7 +20,11 @@ public:
 
     void deviceChanged(int idx);
 
+signals:
+    void DialogSettingsClosed(QCloseEvent *event);
+
 private slots:
+    void closeEvent(QCloseEvent *event);
     void on_btnRefresh_clicked();
 
 private:

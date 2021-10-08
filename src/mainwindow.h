@@ -1,15 +1,24 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QSplitter>
 #include <QList>
+#include <QMainWindow>
+#include <QObject>
+#include <QSplitter>
 
 #include <QPushButton>
 
 #include "dialogsettings.h"
 #include "widgetamplitude.h"
 #include "widgetfrequencyviewer.h"
+
+enum class WorkState
+{
+    Running,
+    Stopped,
+    NoSettings,
+    ShowingSettingsDialogue
+};
 
 namespace Ui {
 class MainWindow;
@@ -23,15 +32,21 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private slots:
-    void on_tbSettings_clicked();
+public slots:
     void closeEvent(QCloseEvent *event);
+    void on_tbSettings_clicked();
+    void dialogueSettingsClosed(QCloseEvent *event);
 
 private:
     Ui::MainWindow *ui;
     WidgetAmplitude *m_wgtAmplitude;
     WidgetFrequencyViewer *m_wgtFrequencyViewer;
     DialogSettings m_dlgSettings;
+
+    WorkState m_workingState;
+
+private:
+    void ChangeWorkingState(WorkState workingState);
 };
 
 #endif // MAINWINDOW_H

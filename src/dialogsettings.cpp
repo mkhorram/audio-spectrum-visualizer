@@ -6,11 +6,18 @@ DialogSettings::DialogSettings(QWidget *parent) :
     ui(new Ui::DialogSettings)
 {
     ui->setupUi(this);
+    on_btnRefresh_clicked();
 }
 
 DialogSettings::~DialogSettings()
 {
     delete ui;
+}
+
+
+void DialogSettings::closeEvent(QCloseEvent *event)
+{
+    emit DialogSettingsClosed(event);
 }
 
 void DialogSettings::on_btnRefresh_clicked()
