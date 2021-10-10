@@ -25,7 +25,9 @@ signals:
 
 private slots:
     void closeEvent(QCloseEvent *event);
+
     void on_btnRefresh_clicked();
+    void on_btnCancel_clicked();
 
 private:
     Ui::DialogSettings *ui;

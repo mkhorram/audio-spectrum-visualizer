@@ -31,6 +31,11 @@ void DialogSettings::on_btnRefresh_clicked()
     deviceChanged(0);
 }
 
+void DialogSettings::on_btnCancel_clicked()
+{
+    this->close();
+}
+
 
 void DialogSettings::deviceChanged(int idx)
 {
@@ -39,7 +44,6 @@ void DialogSettings::deviceChanged(int idx)
 
     QStringList fields;
 
-    // device has changed
     m_deviceInfo = ui->cboActiveAudioInput->itemData(idx).value<QAudioDeviceInfo>();
 
     ui->cboSampleRate->clear();
