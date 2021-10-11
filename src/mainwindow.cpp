@@ -11,6 +11,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->toolBar->addWidget(ui->tbStart);
     ui->toolBar->addWidget(ui->tbStop);
 
+    ui->statusbar->addWidget(ui->lblStopRunStatus);
+    ui->statusbar->addWidget(ui->lblSampleRate);
+
     QSplitter *splitter = new QSplitter(Qt::Horizontal, this);
     m_wgtAmplitude = new WidgetAmplitude(this);
     m_wgtFrequencyViewer = new WidgetFrequencyViewer(this);
