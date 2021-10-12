@@ -30,7 +30,7 @@ void DialogSettings::showEvent(QShowEvent *event)
 
 //sampleRate() = -1
     searchString = QString::number(m_globalFormatSettings.sampleRate());
-    for (int ii = 0; ii<ui->cboSampleRate->count(); ++ii)
+    for (int ii = 0; ii < ui->cboSampleRate->count(); ++ii)
         if (ui->cboSampleRate->itemText(ii) == searchString)
         {
             ui->cboSampleRate->setCurrentIndex(ii);
@@ -43,7 +43,7 @@ void DialogSettings::showEvent(QShowEvent *event)
     //
 //sampleSize() = -1
     searchString = QString::number(m_globalFormatSettings.sampleSize());
-    for (int ii = 0; ii<ui->cboSampleSize->count(); ++ii)
+    for (int ii = 0; ii < ui->cboSampleSize->count(); ++ii)
         if (ui->cboSampleSize->itemText(ii) == searchString)
         {
             ui->cboSampleSize->setCurrentIndex(ii);
@@ -52,28 +52,36 @@ void DialogSettings::showEvent(QShowEvent *event)
 
 //byteOrder() = QAudioFormat::Endian(QSysInfo::ByteOrder)
     searchString = (m_globalFormatSettings.byteOrder() == QAudioFormat::LittleEndian)? "LittleEndian" : "BigEndian";
-    for (int ii = 0; ii<ui->cboEndianness->count(); ++ii)
+    for (int ii = 0; ii < ui->cboEndianness->count(); ++ii)
         if (ui->cboEndianness->itemText(ii) == searchString)
         {
             ui->cboEndianness->setCurrentIndex(ii);
             break;
         }
 
-    // //sampleType() = QAudioFormat::Unknown codec() = ""
-    //     if (ui->cboSampleType->count())
-    //     {
-    //         if (ui->cboSampleType->currentText() == "SignedInt")
-    //             m_globalFormatSettings.setSampleType(QAudioFormat::SignedInt);
-    //         else if (ui->cboSampleType->currentText() == "UnSignedInt")
-    //             m_globalFormatSettings.setSampleType(QAudioFormat::UnSignedInt);
-    //         else if (ui->cboSampleType->currentText() == "Float")
-    //             m_globalFormatSettings.setSampleType(QAudioFormat::Float);
-    //         else
-    //             m_globalFormatSettings.setSampleType(QAudioFormat::Unknown);
-    //     }
-    //
-    //     if (ui->cboCodecs->count())
-    //         m_globalFormatSettings.setCodec(ui->cboCodecs->currentText());
+//sampleType() = QAudioFormat::Unknown codec() = ""
+    if (m_globalFormatSettings.sampleType() == QAudioFormat::SignedInt)
+        searchString = "SignedInt";
+    else if (m_globalFormatSettings.sampleType() == QAudioFormat::UnSignedInt)
+        searchString = "UnSignedInt";
+    else if (m_globalFormatSettings.sampleType() == QAudioFormat::Float)
+        searchString = "Float";
+    else
+        searchString = "Unknown";
+    for (int ii = 0; ii < ui->cboSampleType->count(); ++ii)
+        if (ui->cboSampleType->itemText(ii) == searchString)
+        {
+            ui->cboSampleType->setCurrentIndex(ii);
+            break;
+        }
+
+    searchString = m_globalFormatSettings.codec();
+    for (int ii = 0; ii < ui->cboCodecs->count(); ++ii)
+        if (ui->cboCodecs->itemText(ii) == searchString)
+        {
+            ui->cboCodecs->setCurrentIndex(ii);
+            break;
+        }
 }
 
 void DialogSettings::on_btnRefresh_clicked()
