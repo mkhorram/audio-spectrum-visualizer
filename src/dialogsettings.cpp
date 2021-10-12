@@ -6,6 +6,8 @@ DialogSettings::DialogSettings(QWidget *parent) :
     ui(new Ui::DialogSettings)
 {
     ui->setupUi(this);
+    ui->cboChannel->setVisible(false);
+    ui->lblChannel->setVisible(false);
     this->setModal(true);
 
     on_btnRefresh_clicked();
@@ -53,23 +55,15 @@ void DialogSettings::showEvent(QShowEvent *event)
 //byteOrder() = QAudioFormat::Endian(QSysInfo::ByteOrder)
     searchString = (m_globalFormatSettings.byteOrder() == QAudioFormat::LittleEndian)? "LittleEndian" : "BigEndian";
     for (int ii = 0; ii < ui->cboEndianness->count(); ++ii)
-        if (ui->cboEndianness->itemText(ii) == searchString)
+        if (ui->cboEndianness->itemData(ii).value<QAudioFormat::Endian>() == m_globalFormatSettings.byteOrder())
         {
             ui->cboEndianness->setCurrentIndex(ii);
             break;
         }
 
 //sampleType() = QAudioFormat::Unknown codec() = ""
-    if (m_globalFormatSettings.sampleType() == QAudioFormat::SignedInt)
-        searchString = "SignedInt";
-    else if (m_globalFormatSettings.sampleType() == QAudioFormat::UnSignedInt)
-        searchString = "UnSignedInt";
-    else if (m_globalFormatSettings.sampleType() == QAudioFormat::Float)
-        searchString = "Float";
-    else
-        searchString = "Unknown";
     for (int ii = 0; ii < ui->cboSampleType->count(); ++ii)
-        if (ui->cboSampleType->itemText(ii) == searchString)
+        if (ui->cboSampleType->itemData(ii).value<QAudioFormat::SampleType>() == m_globalFormatSettings.sampleType())
         {
             ui->cboSampleType->setCurrentIndex(ii);
             break;
@@ -153,46 +147,40 @@ void DialogSettings::deviceChanged(int idx)
         m_globalFormatSettings.setSampleSize(sampleSizez.at(0));
 
     ui->cboSampleType->clear();
-    fields.clear();
     QList<QAudioFormat::SampleType> sampleTypez = m_deviceInfo.supportedSampleTypes();
 
     for (int i = 0; i < sampleTypez.size(); ++i)
     {
         switch (sampleTypez[i]) {
         case QAudioFormat::SignedInt:
-            fields << "SignedInt";
+            ui->cboSampleType->addItem("SignedInt", qVariantFromValue(QAudioFormat::SignedInt));
             break;
         case QAudioFormat::UnSignedInt:
-            fields << "UnSignedInt";
+            ui->cboSampleType->addItem("UnSignedInt", qVariantFromValue(QAudioFormat::UnSignedInt));
             break;
         case QAudioFormat::Float:
-            fields << "Float";
+            ui->cboSampleType->addItem("Float", qVariantFromValue(QAudioFormat::Float));
             break;
         case QAudioFormat::Unknown:
-            fields << "Unknown";
+            ui->cboSampleType->addItem("Unknown", qVariantFromValue(QAudioFormat::Unknown));
         }
     }
-    ui->cboSampleType->addItems(fields);
     if (sampleTypez.size() > 0)
         m_globalFormatSettings.setSampleType(sampleTypez.at(0));
 
     ui->cboEndianness->clear();
-    fields.clear();
     QList<QAudioFormat::Endian> endianz = m_deviceInfo.supportedByteOrders();
     for (int i = 0; i < endianz.size(); ++i)
     {
         switch (endianz[i]) {
         case QAudioFormat::LittleEndian:
-            fields << "LittleEndian";
+            ui->cboEndianness->addItem("LittleEndian", qVariantFromValue(QAudioFormat::LittleEndian));
             break;
         case QAudioFormat::BigEndian:
-            fields << "BigEndian";
+            ui->cboEndianness->addItem("BigEndian", qVariantFromValue(QAudioFormat::BigEndian));
             break;
-        default:
-            fields << "Unknown";
         }
     }
-    ui->cboEndianness->addItems(fields);
     if (endianz.size() > 0)
         m_globalFormatSettings.setByteOrder(endianz.at(0));
 }
@@ -216,20 +204,14 @@ void DialogSettings::setGlobalFormatSettings()
 
 //byteOrder() = QAudioFormat::Endian(QSysInfo::ByteOrder)
     if (ui->cboEndianness->count())
-        m_globalFormatSettings.setByteOrder((ui->cboEndianness->currentText() == "LittleEndian")?
-                                                 QAudioFormat::LittleEndian : QAudioFormat::BigEndian);
+        m_globalFormatSettings.setByteOrder(
+                    ui->cboEndianness->itemData(ui->cboEndianness->currentIndex()).value<QAudioFormat::Endian>());
 
 //sampleType() = QAudioFormat::Unknown codec() = ""
     if (ui->cboSampleType->count())
     {
-        if (ui->cboSampleType->currentText() == "SignedInt")
-            m_globalFormatSettings.setSampleType(QAudioFormat::SignedInt);
-        else if (ui->cboSampleType->currentText() == "UnSignedInt")
-            m_globalFormatSettings.setSampleType(QAudioFormat::UnSignedInt);
-        else if (ui->cboSampleType->currentText() == "Float")
-            m_globalFormatSettings.setSampleType(QAudioFormat::Float);
-        else
-            m_globalFormatSettings.setSampleType(QAudioFormat::Unknown);
+        m_globalFormatSettings.setSampleType(
+                    ui->cboSampleType->itemData(ui->cboSampleType->currentIndex()).value<QAudioFormat::SampleType>());
     }
 
     if (ui->cboCodecs->count())
