@@ -10,9 +10,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->toolBar->addSeparator();
     ui->toolBar->addWidget(ui->tbStart);
     ui->toolBar->addWidget(ui->tbStop);
+    ui->toolBar->addSeparator();
+    ui->toolBar->addWidget(ui->lblStopRunStatus);
+    ui->toolBar->addWidget(ui->lblSampleRate);
 
-    ui->statusbar->addWidget(ui->lblStopRunStatus);
-    ui->statusbar->addWidget(ui->lblSampleRate);
+    ui->statusbar->addWidget(ui->lblConfiguredAudioFormat);
 
     QSplitter *splitter = new QSplitter(Qt::Horizontal, this);
     m_wgtAmplitude = new WidgetAmplitude(this);

@@ -6,7 +6,10 @@ DialogSettings::DialogSettings(QWidget *parent) :
     ui(new Ui::DialogSettings)
 {
     ui->setupUi(this);
+    this->setModal(true);
+
     on_btnRefresh_clicked();
+    setGlobalFormatSettings();
 }
 
 DialogSettings::~DialogSettings()
@@ -18,6 +21,59 @@ DialogSettings::~DialogSettings()
 void DialogSettings::closeEvent(QCloseEvent *event)
 {
     emit DialogSettingsClosed(event);
+}
+
+void DialogSettings::showEvent(QShowEvent *event)
+{
+//TODO: restore the default settings
+    QString searchString;
+
+//sampleRate() = -1
+    searchString = QString::number(m_globalFormatSettings.sampleRate());
+    for (int ii = 0; ii<ui->cboSampleRate->count(); ++ii)
+        if (ui->cboSampleRate->itemText(ii) == searchString)
+        {
+            ui->cboSampleRate->setCurrentIndex(ii);
+            break;
+        }
+    //
+    // //channelCount() = -1
+    //     if (ui->cboChannel->count())
+    //         m_globalFormatSettings.setChannelCount(1);
+    //
+//sampleSize() = -1
+    searchString = QString::number(m_globalFormatSettings.sampleSize());
+    for (int ii = 0; ii<ui->cboSampleSize->count(); ++ii)
+        if (ui->cboSampleSize->itemText(ii) == searchString)
+        {
+            ui->cboSampleSize->setCurrentIndex(ii);
+            break;
+        }
+
+//byteOrder() = QAudioFormat::Endian(QSysInfo::ByteOrder)
+    searchString = (m_globalFormatSettings.byteOrder() == QAudioFormat::LittleEndian)? "LittleEndian" : "BigEndian";
+    for (int ii = 0; ii<ui->cboEndianness->count(); ++ii)
+        if (ui->cboEndianness->itemText(ii) == searchString)
+        {
+            ui->cboEndianness->setCurrentIndex(ii);
+            break;
+        }
+
+    // //sampleType() = QAudioFormat::Unknown codec() = ""
+    //     if (ui->cboSampleType->count())
+    //     {
+    //         if (ui->cboSampleType->currentText() == "SignedInt")
+    //             m_globalFormatSettings.setSampleType(QAudioFormat::SignedInt);
+    //         else if (ui->cboSampleType->currentText() == "UnSignedInt")
+    //             m_globalFormatSettings.setSampleType(QAudioFormat::UnSignedInt);
+    //         else if (ui->cboSampleType->currentText() == "Float")
+    //             m_globalFormatSettings.setSampleType(QAudioFormat::Float);
+    //         else
+    //             m_globalFormatSettings.setSampleType(QAudioFormat::Unknown);
+    //     }
+    //
+    //     if (ui->cboCodecs->count())
+    //         m_globalFormatSettings.setCodec(ui->cboCodecs->currentText());
 }
 
 void DialogSettings::on_btnRefresh_clicked()
@@ -34,6 +90,12 @@ void DialogSettings::on_btnRefresh_clicked()
 void DialogSettings::on_btnCancel_clicked()
 {
     this->close();
+}
+
+void DialogSettings::on_btnOK_clicked()
+{
+    setGlobalFormatSettings();
+    close();
 }
 
 
@@ -53,7 +115,7 @@ void DialogSettings::deviceChanged(int idx)
         fields << QString("%1").arg(sampleRatez.at(i));
     ui->cboSampleRate->addItems(fields);
     if (sampleRatez.size() > 0)
-        m_settings.setSampleRate(sampleRatez.at(0));
+        m_globalFormatSettings.setSampleRate(sampleRatez.at(0));
 
     ui->cboChannel->clear();
     fields.clear();
@@ -62,7 +124,7 @@ void DialogSettings::deviceChanged(int idx)
         fields << QString("%1").arg(chz.at(i));
     ui->cboChannel->addItems(fields);
     if (chz.size())
-        m_settings.setChannelCount(chz.at(0));
+        m_globalFormatSettings.setChannelCount(chz.at(0));
 
     ui->cboCodecs->clear();
     fields.clear();
@@ -71,16 +133,16 @@ void DialogSettings::deviceChanged(int idx)
         fields << QString("%1").arg(codecs.at(i));
     ui->cboCodecs->addItems(fields);
     if (codecs.size())
-        m_settings.setCodec(codecs.at(0));
+        m_globalFormatSettings.setCodec(codecs.at(0));
 
-    ui->cboBitDepth->clear();
+    ui->cboSampleSize->clear();
     fields.clear();
     QList<int> sampleSizez = m_deviceInfo.supportedSampleSizes();
     for (int i = 0; i < sampleSizez.size(); ++i)
         fields << QString("%1").arg(sampleSizez.at(i));
-    ui->cboBitDepth->addItems(fields);
+    ui->cboSampleSize->addItems(fields);
     if (sampleSizez.size())
-        m_settings.setSampleSize(sampleSizez.at(0));
+        m_globalFormatSettings.setSampleSize(sampleSizez.at(0));
 
     ui->cboSampleType->clear();
     fields.clear();
@@ -104,7 +166,7 @@ void DialogSettings::deviceChanged(int idx)
     }
     ui->cboSampleType->addItems(fields);
     if (sampleTypez.size() > 0)
-        m_settings.setSampleType(sampleTypez.at(0));
+        m_globalFormatSettings.setSampleType(sampleTypez.at(0));
 
     ui->cboEndianness->clear();
     fields.clear();
@@ -124,5 +186,44 @@ void DialogSettings::deviceChanged(int idx)
     }
     ui->cboEndianness->addItems(fields);
     if (endianz.size() > 0)
-        m_settings.setByteOrder(endianz.at(0));
+        m_globalFormatSettings.setByteOrder(endianz.at(0));
+}
+
+void DialogSettings::setGlobalFormatSettings()
+{
+//sampleRate() = -1
+    if (ui->cboSampleRate->count())
+        m_globalFormatSettings.setSampleRate(ui->cboSampleRate->currentText().toInt());
+
+//channelCount() = -1
+    if (ui->cboChannel->count())
+        m_globalFormatSettings.setChannelCount(1);
+
+//sampleSize() = -1
+    if (ui->cboSampleSize->count())
+    {
+        int i = ui->cboSampleSize->currentText().toInt();
+        m_globalFormatSettings.setSampleSize(ui->cboSampleSize->currentText().toInt());
+    }
+
+//byteOrder() = QAudioFormat::Endian(QSysInfo::ByteOrder)
+    if (ui->cboEndianness->count())
+        m_globalFormatSettings.setByteOrder((ui->cboEndianness->currentText() == "LittleEndian")?
+                                                 QAudioFormat::LittleEndian : QAudioFormat::BigEndian);
+
+//sampleType() = QAudioFormat::Unknown codec() = ""
+    if (ui->cboSampleType->count())
+    {
+        if (ui->cboSampleType->currentText() == "SignedInt")
+            m_globalFormatSettings.setSampleType(QAudioFormat::SignedInt);
+        else if (ui->cboSampleType->currentText() == "UnSignedInt")
+            m_globalFormatSettings.setSampleType(QAudioFormat::UnSignedInt);
+        else if (ui->cboSampleType->currentText() == "Float")
+            m_globalFormatSettings.setSampleType(QAudioFormat::Float);
+        else
+            m_globalFormatSettings.setSampleType(QAudioFormat::Unknown);
+    }
+
+    if (ui->cboCodecs->count())
+        m_globalFormatSettings.setCodec(ui->cboCodecs->currentText());
 }

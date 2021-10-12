@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <property name="toolTip">
@@ -30,7 +30,7 @@
        <item>
         <layout class="QGridLayout" name="gridLayout">
          <item row="3" column="1">
-          <widget class="QComboBox" name="cboBitDepth"/>
+          <widget class="QComboBox" name="cboSampleSize"/>
          </item>
          <item row="2" column="1">
           <widget class="QComboBox" name="cboCodecs"/>
@@ -61,7 +61,7 @@
          <item row="3" column="0">
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Bit Depth</string>
+            <string>Sample Size</string>
            </property>
           </widget>
          </item>

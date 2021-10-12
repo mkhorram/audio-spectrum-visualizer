@@ -5,6 +5,7 @@
 #include <QStringList>
 #include <QtMultimedia/QAudio>
 #include <QtMultimedia/QAudioDeviceInfo>
+#include <QtMultimedia/QAudioFormat>
 
 namespace Ui {
 class DialogSettings;
@@ -23,17 +24,22 @@ public:
 signals:
     void DialogSettingsClosed(QCloseEvent *event);
 
+private:
+    void setGlobalFormatSettings();
+
 private slots:
     void closeEvent(QCloseEvent *event);
+    void showEvent(QShowEvent *event);
 
     void on_btnRefresh_clicked();
     void on_btnCancel_clicked();
+    void on_btnOK_clicked();
 
 private:
     Ui::DialogSettings *ui;
 
     QAudioDeviceInfo m_deviceInfo;
-    QAudioFormat m_settings;
+    QAudioFormat m_globalFormatSettings;
 };
 
 #endif // DIALOGSETTINGS_H
