@@ -19,6 +19,16 @@ DialogSettings::~DialogSettings()
     delete ui;
 }
 
+QAudioFormat DialogSettings::getFormat()
+{
+    return m_globalFormatSettings;
+}
+
+QAudioDeviceInfo DialogSettings::getDeviceInfo()
+{
+    return m_deviceInfo;
+}
+
 
 void DialogSettings::closeEvent(QCloseEvent *event)
 {
@@ -28,6 +38,8 @@ void DialogSettings::closeEvent(QCloseEvent *event)
 void DialogSettings::showEvent(QShowEvent *event)
 {
 //TODO: restore the default settings
+    ui->cboActiveAudioInput->setCurrentIndex(m_deviceIndex);
+
     QString searchString;
 
 //sampleRate() = -1
@@ -85,8 +97,9 @@ void DialogSettings::on_btnRefresh_clicked()
     for (auto &deviceInfo: QAudioDeviceInfo::availableDevices(QAudio::AudioInput))
         ui->cboActiveAudioInput->addItem(deviceInfo.deviceName(), qVariantFromValue(deviceInfo));
 
-    ui->cboActiveAudioInput->setCurrentIndex(0);
-    deviceChanged(0);
+    m_deviceIndex = 0;
+    ui->cboActiveAudioInput->setCurrentIndex(m_deviceIndex);
+    deviceChanged(m_deviceIndex);
 }
 
 void DialogSettings::on_btnCancel_clicked()
@@ -96,6 +109,7 @@ void DialogSettings::on_btnCancel_clicked()
 
 void DialogSettings::on_btnOK_clicked()
 {
+    m_deviceIndex = ui->cboActiveAudioInput->currentIndex();
     setGlobalFormatSettings();
     close();
 }

@@ -19,13 +19,15 @@ public:
     explicit DialogSettings(QWidget *parent = nullptr);
     ~DialogSettings();
 
-    void deviceChanged(int idx);
+    QAudioFormat getFormat();
+    QAudioDeviceInfo getDeviceInfo();
 
 signals:
     void DialogSettingsClosed(QCloseEvent *event);
 
 private:
     void setGlobalFormatSettings();
+    void deviceChanged(int idx);
 
 private slots:
     void closeEvent(QCloseEvent *event);
@@ -38,6 +40,7 @@ private slots:
 private:
     Ui::DialogSettings *ui;
 
+    int m_deviceIndex;
     QAudioDeviceInfo m_deviceInfo;
     QAudioFormat m_globalFormatSettings;
 };
