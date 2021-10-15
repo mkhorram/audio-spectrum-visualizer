@@ -12,6 +12,10 @@ DialogSettings::DialogSettings(QWidget *parent) :
 
     on_btnRefresh_clicked();
     setGlobalFormatSettings();
+
+    // disabled until implementation
+    ui->tabFFT->setEnabled(false);
+    ui->tabVisualization->setEnabled(false);
 }
 
 DialogSettings::~DialogSettings()

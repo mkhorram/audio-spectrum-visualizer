@@ -19,7 +19,7 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="tabSoundCard">
       <property name="toolTip">
        <string>Sampling</string>
       </property>
@@ -154,7 +154,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="tabFFT">
       <attribute name="title">
        <string>FFT Settings</string>
       </attribute>
@@ -231,7 +231,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
+     <widget class="QWidget" name="tabVisualization">
       <attribute name="title">
        <string>Visualization</string>
       </attribute>
