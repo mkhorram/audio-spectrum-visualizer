@@ -27,6 +27,7 @@ signals:
 
 private:
     void setGlobalFormatSettings();
+    void resetAudioFormatSettingsForm();
     void deviceChanged(int idx);
 
 private slots:

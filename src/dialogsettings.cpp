@@ -41,57 +41,8 @@ void DialogSettings::closeEvent(QCloseEvent *event)
 
 void DialogSettings::showEvent(QShowEvent *event)
 {
-//TODO: restore the default settings
-    ui->cboActiveAudioInput->setCurrentIndex(m_deviceIndex);
-
-    QString searchString;
-
-//sampleRate() = -1
-    searchString = QString::number(m_globalFormatSettings.sampleRate());
-    for (int ii = 0; ii < ui->cboSampleRate->count(); ++ii)
-        if (ui->cboSampleRate->itemText(ii) == searchString)
-        {
-            ui->cboSampleRate->setCurrentIndex(ii);
-            break;
-        }
-    //
-    // //channelCount() = -1
-    //     if (ui->cboChannel->count())
-    //         m_globalFormatSettings.setChannelCount(1);
-    //
-//sampleSize() = -1
-    searchString = QString::number(m_globalFormatSettings.sampleSize());
-    for (int ii = 0; ii < ui->cboSampleSize->count(); ++ii)
-        if (ui->cboSampleSize->itemText(ii) == searchString)
-        {
-            ui->cboSampleSize->setCurrentIndex(ii);
-            break;
-        }
-
-//byteOrder() = QAudioFormat::Endian(QSysInfo::ByteOrder)
-    searchString = (m_globalFormatSettings.byteOrder() == QAudioFormat::LittleEndian)? "LittleEndian" : "BigEndian";
-    for (int ii = 0; ii < ui->cboEndianness->count(); ++ii)
-        if (ui->cboEndianness->itemData(ii).value<QAudioFormat::Endian>() == m_globalFormatSettings.byteOrder())
-        {
-            ui->cboEndianness->setCurrentIndex(ii);
-            break;
-        }
-
-//sampleType() = QAudioFormat::Unknown codec() = ""
-    for (int ii = 0; ii < ui->cboSampleType->count(); ++ii)
-        if (ui->cboSampleType->itemData(ii).value<QAudioFormat::SampleType>() == m_globalFormatSettings.sampleType())
-        {
-            ui->cboSampleType->setCurrentIndex(ii);
-            break;
-        }
-
-    searchString = m_globalFormatSettings.codec();
-    for (int ii = 0; ii < ui->cboCodecs->count(); ++ii)
-        if (ui->cboCodecs->itemText(ii) == searchString)
-        {
-            ui->cboCodecs->setCurrentIndex(ii);
-            break;
-        }
+    //TODO: restore the default settings
+    resetAudioFormatSettingsForm();
 }
 
 void DialogSettings::on_btnRefresh_clicked()
@@ -104,6 +55,7 @@ void DialogSettings::on_btnRefresh_clicked()
     m_deviceIndex = 0;
     ui->cboActiveAudioInput->setCurrentIndex(m_deviceIndex);
     deviceChanged(m_deviceIndex);
+    setGlobalFormatSettings();
 }
 
 void DialogSettings::on_btnCancel_clicked()
@@ -134,8 +86,6 @@ void DialogSettings::deviceChanged(int idx)
     for (int i = 0; i < sampleRatez.size(); ++i)
         fields << QString("%1").arg(sampleRatez.at(i));
     ui->cboSampleRate->addItems(fields);
-    if (sampleRatez.size() > 0)
-        m_globalFormatSettings.setSampleRate(sampleRatez.at(0));
 
     ui->cboChannel->clear();
     fields.clear();
@@ -143,8 +93,6 @@ void DialogSettings::deviceChanged(int idx)
     for (int i = 0; i < chz.size(); ++i)
         fields << QString("%1").arg(chz.at(i));
     ui->cboChannel->addItems(fields);
-    if (chz.size())
-        m_globalFormatSettings.setChannelCount(chz.at(0));
 
     ui->cboCodecs->clear();
     fields.clear();
@@ -152,8 +100,6 @@ void DialogSettings::deviceChanged(int idx)
     for (int i = 0; i < codecs.size(); ++i)
         fields << QString("%1").arg(codecs.at(i));
     ui->cboCodecs->addItems(fields);
-    if (codecs.size())
-        m_globalFormatSettings.setCodec(codecs.at(0));
 
     ui->cboSampleSize->clear();
     fields.clear();
@@ -161,8 +107,6 @@ void DialogSettings::deviceChanged(int idx)
     for (int i = 0; i < sampleSizez.size(); ++i)
         fields << QString("%1").arg(sampleSizez.at(i));
     ui->cboSampleSize->addItems(fields);
-    if (sampleSizez.size())
-        m_globalFormatSettings.setSampleSize(sampleSizez.at(0));
 
     ui->cboSampleType->clear();
     QList<QAudioFormat::SampleType> sampleTypez = m_deviceInfo.supportedSampleTypes();
@@ -183,8 +127,6 @@ void DialogSettings::deviceChanged(int idx)
             ui->cboSampleType->addItem("Unknown", qVariantFromValue(QAudioFormat::Unknown));
         }
     }
-    if (sampleTypez.size() > 0)
-        m_globalFormatSettings.setSampleType(sampleTypez.at(0));
 
     ui->cboEndianness->clear();
     QList<QAudioFormat::Endian> endianz = m_deviceInfo.supportedByteOrders();
@@ -199,8 +141,6 @@ void DialogSettings::deviceChanged(int idx)
             break;
         }
     }
-    if (endianz.size() > 0)
-        m_globalFormatSettings.setByteOrder(endianz.at(0));
 }
 
 void DialogSettings::setGlobalFormatSettings()
@@ -234,4 +174,58 @@ void DialogSettings::setGlobalFormatSettings()
 
     if (ui->cboCodecs->count())
         m_globalFormatSettings.setCodec(ui->cboCodecs->currentText());
+}
+
+void DialogSettings::resetAudioFormatSettingsForm()
+{
+    ui->cboActiveAudioInput->setCurrentIndex(m_deviceIndex);
+
+    QString searchString;
+
+    //sampleRate() = -1
+    searchString = QString::number(m_globalFormatSettings.sampleRate());
+    ui->cboSampleRate->setCurrentIndex(0);
+    for (int ii = 0; ii < ui->cboSampleRate->count(); ++ii)
+        if (ui->cboSampleRate->itemText(ii) == searchString)
+        {
+            ui->cboSampleRate->setCurrentIndex(ii);
+            break;
+        }
+    //sampleSize() = -1
+    searchString = QString::number(m_globalFormatSettings.sampleSize());
+    ui->cboSampleSize->setCurrentIndex(0);
+    for (int ii = 0; ii < ui->cboSampleSize->count(); ++ii)
+        if (ui->cboSampleSize->itemText(ii) == searchString)
+        {
+            ui->cboSampleSize->setCurrentIndex(ii);
+            break;
+        }
+
+    //byteOrder() = QAudioFormat::Endian(QSysInfo::ByteOrder)
+    searchString = (m_globalFormatSettings.byteOrder() == QAudioFormat::LittleEndian)? "LittleEndian" : "BigEndian";
+    ui->cboEndianness->setCurrentIndex(0);
+    for (int ii = 0; ii < ui->cboEndianness->count(); ++ii)
+        if (ui->cboEndianness->itemData(ii).value<QAudioFormat::Endian>() == m_globalFormatSettings.byteOrder())
+        {
+            ui->cboEndianness->setCurrentIndex(ii);
+            break;
+        }
+
+    //sampleType() = QAudioFormat::Unknown codec() = ""
+    ui->cboSampleType->setCurrentIndex(0);
+    for (int ii = 0; ii < ui->cboSampleType->count(); ++ii)
+        if (ui->cboSampleType->itemData(ii).value<QAudioFormat::SampleType>() == m_globalFormatSettings.sampleType())
+        {
+            ui->cboSampleType->setCurrentIndex(ii);
+            break;
+        }
+
+    searchString = m_globalFormatSettings.codec();
+    ui->cboCodecs->setCurrentIndex(0);
+    for (int ii = 0; ii < ui->cboCodecs->count(); ++ii)
+        if (ui->cboCodecs->itemText(ii) == searchString)
+        {
+            ui->cboCodecs->setCurrentIndex(ii);
+            break;
+        }
 }
