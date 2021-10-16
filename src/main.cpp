@@ -1,11 +1,21 @@
 #include "mainwindow.h"
 #include <QApplication>
 
-using namespace std;
+
+
+void setSharedStyleSheet(QApplication &a)
+{
+    a.setStyleSheet(
+                ""
+                );
+}
+
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    setSharedStyleSheet(a);
+
     MainWindow w;
     w.show();
 
