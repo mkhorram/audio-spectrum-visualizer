@@ -41,6 +41,7 @@ void DialogSettings::closeEvent(QCloseEvent *event)
 
 void DialogSettings::showEvent(QShowEvent *event)
 {
+    Q_UNUSED(event)
     //TODO: restore the default settings
     resetAudioFormatSettingsForm();
 }
@@ -112,7 +113,6 @@ void DialogSettings::deviceChanged(int idx)
     QList<QAudioFormat::SampleType> sampleTypez = m_deviceInfo.supportedSampleTypes();
 
     for (int i = 0; i < sampleTypez.size(); ++i)
-    {
         switch (sampleTypez[i]) {
         case QAudioFormat::SignedInt:
             ui->cboSampleType->addItem("SignedInt", qVariantFromValue(QAudioFormat::SignedInt));
@@ -126,12 +126,10 @@ void DialogSettings::deviceChanged(int idx)
         case QAudioFormat::Unknown:
             ui->cboSampleType->addItem("Unknown", qVariantFromValue(QAudioFormat::Unknown));
         }
-    }
 
     ui->cboEndianness->clear();
     QList<QAudioFormat::Endian> endianz = m_deviceInfo.supportedByteOrders();
     for (int i = 0; i < endianz.size(); ++i)
-    {
         switch (endianz[i]) {
         case QAudioFormat::LittleEndian:
             ui->cboEndianness->addItem("LittleEndian", qVariantFromValue(QAudioFormat::LittleEndian));
@@ -140,7 +138,7 @@ void DialogSettings::deviceChanged(int idx)
             ui->cboEndianness->addItem("BigEndian", qVariantFromValue(QAudioFormat::BigEndian));
             break;
         }
-    }
+
 }
 
 void DialogSettings::setGlobalFormatSettings()
@@ -155,10 +153,7 @@ void DialogSettings::setGlobalFormatSettings()
 
 //sampleSize() = -1
     if (ui->cboSampleSize->count())
-    {
-        int i = ui->cboSampleSize->currentText().toInt();
         m_globalFormatSettings.setSampleSize(ui->cboSampleSize->currentText().toInt());
-    }
 
 //byteOrder() = QAudioFormat::Endian(QSysInfo::ByteOrder)
     if (ui->cboEndianness->count())
@@ -167,10 +162,8 @@ void DialogSettings::setGlobalFormatSettings()
 
 //sampleType() = QAudioFormat::Unknown codec() = ""
     if (ui->cboSampleType->count())
-    {
         m_globalFormatSettings.setSampleType(
                     ui->cboSampleType->itemData(ui->cboSampleType->currentIndex()).value<QAudioFormat::SampleType>());
-    }
 
     if (ui->cboCodecs->count())
         m_globalFormatSettings.setCodec(ui->cboCodecs->currentText());

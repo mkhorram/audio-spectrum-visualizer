@@ -50,6 +50,7 @@ void MainWindow::on_tbSettings_clicked()
 
 void MainWindow::dialogueSettingsClosed(QCloseEvent *event)
 {
+    Q_UNUSED(event)
     ChangeWorkingState(WorkState::Stopped);
 }
 
