@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "overlappedringbuffer.hpp"
+#include "ringbuffer.hpp"
 
 class WidgetAmplitude : public QWidget
 {
@@ -27,7 +27,7 @@ public slots:
 private:
     float m_minValue;
     float m_maxValue;
-    OverlappedRingBuffer amplitudes;
+    RingBuffer<barAmplitudeValues> amplitudes;
 };
 
 #endif // WIDGETAMPLITUDE_H
