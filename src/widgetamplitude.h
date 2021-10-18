@@ -8,8 +8,13 @@
 class WidgetAmplitude : public QWidget
 {
     Q_OBJECT
-    struct barAmplitudeValues
+    struct BarAmplitudeValues
     {
+        BarAmplitudeValues(float low_Input, float high_Input)
+        {
+            lowInput = low_Input;
+            highInput = high_Input;
+        }
         float lowInput;
         float highInput;
     };
@@ -18,7 +23,7 @@ public:
     explicit WidgetAmplitude(QWidget *parent = nullptr);
 
     void setLevelRagne(float minValue, float maxValue);
-    void setLevelBar(float lowInput, float highInput);
+    void insertLevelBar(float lowInput, float highInput);
 
 signals:
 
@@ -27,7 +32,7 @@ public slots:
 private:
     float m_minValue;
     float m_maxValue;
-    RingBuffer<barAmplitudeValues> amplitudes;
+    RingBuffer<BarAmplitudeValues> m_amplitudes;
 };
 
 #endif // WIDGETAMPLITUDE_H
