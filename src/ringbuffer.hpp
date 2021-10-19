@@ -3,6 +3,10 @@
 
 #include <vector>
 
+
+#define DEFAULTBUFFERSIZE 100000   // appropriate to store 96000 samples of 1 sec of audio inputs
+
+
 template <typename T>
 class RingBuffer
 {
@@ -15,7 +19,7 @@ private:
 public:
     RingBuffer(const RingBuffer&) = delete;
     RingBuffer& operator=(const RingBuffer&) = delete;
-    RingBuffer(unsigned long bufSize = 100000) : m_bufSize(bufSize) { m_buffer.reserve(m_bufSize); }
+    RingBuffer(unsigned long bufSize = DEFAULTBUFFERSIZE) : m_bufSize(bufSize) { m_buffer.reserve(m_bufSize); }
 
     unsigned long getBufSize() const { return m_bufSize; }
 
@@ -24,14 +28,14 @@ public:
     void haveRead(unsigned long length)
     {
         if (getlenghtToRead() < length)
-            throw "The length is beyond the available data";
+            throw "The length, to be removed, is beyond the available data.";
         m_readPoint = (m_readPoint+length)%m_bufSize;
     }
 
     T& operator[](unsigned long index)
     {
         if ( getlenghtToRead() < index ) // how much data is available to read
-            throw "The index is beyond the available data";
+            throw "The index is beyond the available data.";
 
         unsigned long idx = (index + m_readPoint) % m_bufSize;
         return m_buffer[idx];
