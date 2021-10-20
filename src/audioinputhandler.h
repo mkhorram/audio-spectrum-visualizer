@@ -8,11 +8,17 @@
 #include <QIODevice>
 #include <QObject>
 
-class AudioInputHandler
+class AudioInputHandler : public QObject
 {
+    Q_OBJECT
 public:
-    AudioInputHandler();
-    ~AudioInputHandler();
+    explicit AudioInputHandler();
+    virtual ~AudioInputHandler() = 0;
+
+    void setAudioFormat(QAudioFormat format);
+    void setAudioDeviceInfo(QAudioDeviceInfo audioDeviceInfo);
+    bool run();
+    void stop();
 
 signals:
 
@@ -23,6 +29,8 @@ private slots:
 private:
     QAudioInput *m_AudioInput = nullptr;
     QBuffer  m_InputBuffer;
+    QAudioFormat m_format;
+    QAudioDeviceInfo m_audioDeviceInfo;
 
     QVector<double> m_Samples;
 };
