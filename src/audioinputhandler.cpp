@@ -29,8 +29,7 @@ bool AudioInputHandler::run()
 
     m_AudioInput = nullptr;
     m_AudioInput = new QAudioInput(m_audioDeviceInfo, m_format, this);
-    m_AudioInput->setNotifyInterval(100);
-
+    m_notifyInterval = m_AudioInput->notifyInterval();
 
     QObject::connect(m_AudioInput, &QAudioInput::notify, this, &AudioInputHandler::processAudioIn);
     QObject::connect(m_AudioInput, &QAudioInput::stateChanged, this, &AudioInputHandler::stateChangeAudioIn);

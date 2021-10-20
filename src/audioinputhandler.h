@@ -33,6 +33,7 @@ private:
     QAudioDeviceInfo m_audioDeviceInfo;
 
     QVector<double> m_Samples;
+    int m_notifyInterval;
 };
 
 #endif // AUDIOINPUTHANDLER_H
