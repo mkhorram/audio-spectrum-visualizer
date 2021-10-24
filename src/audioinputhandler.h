@@ -13,11 +13,11 @@ class AudioInputHandler : public QObject
     Q_OBJECT
 public:
     explicit AudioInputHandler();
-    virtual ~AudioInputHandler() = 0;
+    ~AudioInputHandler();
 
-    void setAudioFormat(QAudioFormat format);
-    void setAudioDeviceInfo(QAudioDeviceInfo audioDeviceInfo);
-    bool run();
+//    void setAudioFormat(QAudioFormat format);
+//    void setAudioDeviceInfo(QAudioDeviceInfo audioDeviceInfo);
+    bool start(QAudioFormat format, QAudioDeviceInfo audioDeviceInfo);
     void stop();
 
 signals:
@@ -25,10 +25,11 @@ signals:
 private slots:
     void processAudioIn();
     void stateChangeAudioIn(QAudio::State s);
+    void readyRead();
 
 private:
     QAudioInput *m_AudioInput = nullptr;
-    QBuffer  m_InputBuffer;
+    QBuffer m_InputBuffer;
     QAudioFormat m_format;
     QAudioDeviceInfo m_audioDeviceInfo;
 

@@ -59,20 +59,30 @@ void MainWindow::ChangeWorkingState(WorkState workingState)
     if (workingState == WorkState::ShowingSettingsDialogue ||
             workingState == WorkState::NoSettings)
     {
-        m_workingState = WorkState::Running;
         ui->tbStart->setEnabled(false);
         ui->tbStop->setEnabled(false);
+        ui->tbSettings->setEnabled(true);
+        m_workingState = workingState;
     }
     else if (workingState == WorkState::Stopped)
     {
-        m_workingState = WorkState::Stopped;
         ui->tbStart->setEnabled(true);
         ui->tbStop->setEnabled(false);
+        ui->tbSettings->setEnabled(true);
+        m_workingState = workingState;
     }
     else
     {
-        m_workingState = WorkState::Running;
         ui->tbStart->setEnabled(false);
         ui->tbStop->setEnabled(true);
+        ui->tbSettings->setEnabled(false);
+        m_workingState = workingState;
     }
+}
+
+void MainWindow::on_tbStart_clicked()
+{
+    QAudioFormat format = m_dlgSettings.getFormat();
+    QAudioDeviceInfo m_deviceInfo = m_dlgSettings.getDeviceInfo();
+    m_audioHandler.start(format, m_deviceInfo);
 }

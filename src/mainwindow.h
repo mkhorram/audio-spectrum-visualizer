@@ -8,6 +8,7 @@
 
 #include <QPushButton>
 
+#include "audioinputhandler.h"
 #include "dialogsettings.h"
 #include "widgetamplitude.h"
 #include "widgetfrequencyviewer.h"
@@ -37,12 +38,16 @@ public slots:
     void on_tbSettings_clicked();
     void dialogueSettingsClosed(QCloseEvent *event);
 
+private slots:
+    void on_tbStart_clicked();
+
 private:
     Ui::MainWindow *ui;
     WidgetAmplitude *m_wgtAmplitude;
     WidgetFrequencyViewer *m_wgtFrequencyViewer;
     DialogSettings m_dlgSettings;
 
+    AudioInputHandler m_audioHandler;
     WorkState m_workingState;
 
 private:
