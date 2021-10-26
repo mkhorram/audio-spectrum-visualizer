@@ -41,6 +41,8 @@ public slots:
 private slots:
     void on_tbStart_clicked();
 
+    void on_tbStop_clicked();
+
 private:
     Ui::MainWindow *ui;
     WidgetAmplitude *m_wgtAmplitude;
