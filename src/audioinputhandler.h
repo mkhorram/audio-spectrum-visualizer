@@ -8,6 +8,8 @@
 #include <QIODevice>
 #include <QObject>
 
+#include <chrono>
+
 class AudioInputHandler : public QObject
 {
     Q_OBJECT
@@ -15,8 +17,6 @@ public:
     explicit AudioInputHandler();
     ~AudioInputHandler();
 
-//    void setAudioFormat(QAudioFormat format);
-//    void setAudioDeviceInfo(QAudioDeviceInfo audioDeviceInfo);
     bool start(QAudioFormat format, QAudioDeviceInfo audioDeviceInfo);
     void stop();
 
@@ -29,12 +29,16 @@ private slots:
 
 private:
     QAudioInput *m_AudioInput = nullptr;
-    QBuffer m_InputBuffer;
+    QIODevice * IODevice;
     QAudioFormat m_format;
     QAudioDeviceInfo m_audioDeviceInfo;
 
     QVector<double> m_Samples;
     int m_notifyInterval;
+
+    const unsigned long long m_buf_length = 100000;
+    char * m_buf;
+    std::chrono::time_point<std::chrono::high_resolution_clock> tp;
 };
 
 #endif // AUDIOINPUTHANDLER_H

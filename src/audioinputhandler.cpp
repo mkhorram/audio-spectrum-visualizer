@@ -3,11 +3,13 @@
 
 AudioInputHandler::AudioInputHandler()
 {
-
+    m_buf = new char[m_buf_length];
 }
 
 AudioInputHandler::~AudioInputHandler()
-{ }
+{
+    delete m_buf;
+}
 
 
 
@@ -18,7 +20,7 @@ bool AudioInputHandler::start(QAudioFormat format, QAudioDeviceInfo audioDeviceI
     if (m_audioDeviceInfo.isNull() || !m_format.isValid())
         return false;
 
-    if (m_AudioInput) delete m_AudioInput;
+    if (m_AudioInput != nullptr) delete m_AudioInput;
     m_AudioInput = nullptr;
 
     m_AudioInput = new QAudioInput(m_audioDeviceInfo, m_format, this);
@@ -26,10 +28,14 @@ bool AudioInputHandler::start(QAudioFormat format, QAudioDeviceInfo audioDeviceI
 
     QObject::connect(m_AudioInput, &QAudioInput::notify, this, &AudioInputHandler::processAudioIn);
     QObject::connect(m_AudioInput, &QAudioInput::stateChanged, this, &AudioInputHandler::stateChangeAudioIn);
-    QObject::connect(&m_InputBuffer, &QBuffer::readyRead, this, &AudioInputHandler::readyRead);
 
-    m_InputBuffer.open(QBuffer::ReadWrite);
-    m_AudioInput->start(&m_InputBuffer);
+    IODevice = m_AudioInput->start();
+    QObject::connect(IODevice, &QBuffer::readyRead, this, &AudioInputHandler::readyRead);
+
+    tp = std::chrono::high_resolution_clock::now();
+    qDebug() << "Device " << audioDeviceInfo.deviceName();
+    qDebug() << "sampleRate " << format.sampleRate();
+    qDebug() << "sampleSize " << format.sampleSize();
 
     return true;
 }
@@ -40,6 +46,7 @@ void AudioInputHandler::stop()
         return;
     m_AudioInput->stop();
     m_AudioInput->deleteLater();
+    m_AudioInput = nullptr;
 }
 
 void AudioInputHandler::processAudioIn()
@@ -54,8 +61,16 @@ void AudioInputHandler::stateChangeAudioIn(QAudio::State s)
 
 void AudioInputHandler::readyRead()
 {
-    QByteArray data = m_InputBuffer.readAll();
-    qDebug() << data.length();
+    std::chrono::duration<int, std::milli> d(10);
+    std::chrono::time_point<std::chrono::high_resolution_clock> tp2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> dt = tp2-tp;
+    tp = tp2;
+
+    QByteArray data = IODevice->readAll();
+    data.size();
+
+    qDebug() << data.size() << "   time duration (millisec: " << "   " << static_cast<int> (dt.count()*1000);
+
 }
 
 
