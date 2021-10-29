@@ -20,6 +20,9 @@ public:
     bool start(QAudioFormat format, QAudioDeviceInfo audioDeviceInfo);
     void stop();
 
+private:
+    void measureActualSampleRate(long long newReceivedSampleCount);
+
 signals:
 
 private slots:
@@ -33,12 +36,15 @@ private:
     QAudioFormat m_format;
     QAudioDeviceInfo m_audioDeviceInfo;
 
-    QVector<double> m_Samples;
+    long m_minSampleCount;
+    long m_sampleCount;
+
+    const long long m_buf_length = 100000;
+    char * m_buf;
+    std::vector<double> m_samples;
     int m_notifyInterval;
 
-    const unsigned long long m_buf_length = 100000;
-    char * m_buf;
-    std::chrono::time_point<std::chrono::high_resolution_clock> tp;
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_timePoint;
 };
 
 #endif // AUDIOINPUTHANDLER_H

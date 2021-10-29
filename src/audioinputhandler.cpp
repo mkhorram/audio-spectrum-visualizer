@@ -4,6 +4,7 @@
 AudioInputHandler::AudioInputHandler()
 {
     m_buf = new char[m_buf_length];
+    m_samples.resize(m_buf_length);
 }
 
 AudioInputHandler::~AudioInputHandler()
@@ -15,6 +16,8 @@ AudioInputHandler::~AudioInputHandler()
 
 bool AudioInputHandler::start(QAudioFormat format, QAudioDeviceInfo audioDeviceInfo)
 {
+    m_minSampleCount = format.sampleRate();
+
     m_format = format;
     m_audioDeviceInfo = audioDeviceInfo;
     if (m_audioDeviceInfo.isNull() || !m_format.isValid())
@@ -32,7 +35,7 @@ bool AudioInputHandler::start(QAudioFormat format, QAudioDeviceInfo audioDeviceI
     IODevice = m_AudioInput->start();
     QObject::connect(IODevice, &QBuffer::readyRead, this, &AudioInputHandler::readyRead);
 
-    tp = std::chrono::high_resolution_clock::now();
+    m_timePoint = std::chrono::high_resolution_clock::now();
     qDebug() << "Device " << audioDeviceInfo.deviceName();
     qDebug() << "sampleRate " << format.sampleRate();
     qDebug() << "sampleSize " << format.sampleSize();
@@ -49,6 +52,20 @@ void AudioInputHandler::stop()
     m_AudioInput = nullptr;
 }
 
+void AudioInputHandler::measureActualSampleRate(long long newReceivedSampleCount)
+{
+    m_sampleCount += newReceivedSampleCount;
+    if (m_sampleCount >= m_minSampleCount)
+    {
+        std::chrono::time_point<std::chrono::high_resolution_clock> timePoint2 = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double>  dt = timePoint2-m_timePoint;
+        long actualSampleRate = static_cast<long>(m_sampleCount / dt.count());
+        qDebug() << "Sample Rate: " << actualSampleRate << " = " << m_sampleCount << " / " << dt.count();
+        m_timePoint = timePoint2;
+        m_sampleCount = 0;
+    }
+}
+
 void AudioInputHandler::processAudioIn()
 {
     //
@@ -61,16 +78,11 @@ void AudioInputHandler::stateChangeAudioIn(QAudio::State s)
 
 void AudioInputHandler::readyRead()
 {
-    std::chrono::duration<int, std::milli> d(10);
-    std::chrono::time_point<std::chrono::high_resolution_clock> tp2 = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> dt = tp2-tp;
-    tp = tp2;
+    long long dataSize = IODevice->read(m_buf, m_buf_length);
 
-    QByteArray data = IODevice->readAll();
-    data.size();
+    measureActualSampleRate(dataSize);
 
-    qDebug() << data.size() << "   time duration (millisec: " << "   " << static_cast<int> (dt.count()*1000);
-
+    qDebug() << dataSize;
 }
 
 
