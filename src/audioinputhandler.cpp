@@ -16,6 +16,7 @@ AudioInputHandler::~AudioInputHandler()
 
 bool AudioInputHandler::start(QAudioFormat format, QAudioDeviceInfo audioDeviceInfo)
 {
+    Q_ASSERT(format.sampleSize() % 8 == 0);
     m_minSampleCount = format.sampleRate();
 
     m_format = format;
@@ -78,9 +79,17 @@ void AudioInputHandler::stateChangeAudioIn(QAudio::State s)
 
 void AudioInputHandler::readyRead()
 {
-    long long dataSize = IODevice->read(m_buf, m_buf_length);
+    long dataSize = IODevice->read(m_buf, m_buf_length);
 
     measureActualSampleRate(dataSize);
+
+    if (m_format.sampleSize() == 8)
+    {
+        if (m_format.sampleType() == QAudioFormat::UnSignedInt)
+            castDataToDouble<const quint8*>(m_buf, dataSize);
+        else if (m_format.sampleType() == QAudioFormat::SignedInt)
+            castDataToDouble<const qint8*>(m_buf, dataSize);
+    }
 
     qDebug() << dataSize;
 }
