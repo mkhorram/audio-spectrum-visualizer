@@ -104,9 +104,10 @@ void DialogSettings::deviceChanged(int idx)
 
     ui->cboSampleSize->clear();
     fields.clear();
-    QList<int> sampleSizez = m_deviceInfo.supportedSampleSizes();
-    for (int i = 0; i < sampleSizez.size(); ++i)
-        fields << QString("%1").arg(sampleSizez.at(i));
+    QList<int> sampleSizes = m_deviceInfo.supportedSampleSizes();
+    for (int i = 0; i < sampleSizes.size(); ++i)
+        if (sampleSizes.at(i)==8 || sampleSizes.at(i)==16 || sampleSizes.at(i)==32 || sampleSizes.at(i)==64)
+            fields << QString("%1").arg(sampleSizes.at(i));
     ui->cboSampleSize->addItems(fields);
 
     ui->cboSampleType->clear();
@@ -164,6 +165,8 @@ void DialogSettings::setGlobalFormatSettings()
     if (ui->cboSampleType->count())
         m_globalFormatSettings.setSampleType(
                     ui->cboSampleType->itemData(ui->cboSampleType->currentIndex()).value<QAudioFormat::SampleType>());
+    if (m_globalFormatSettings.sampleType() == QAudioFormat::Float)
+        m_globalFormatSettings.setSampleSize(32);  // or 64?
 
     if (ui->cboCodecs->count())
         m_globalFormatSettings.setCodec(ui->cboCodecs->currentText());
