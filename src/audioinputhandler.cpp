@@ -86,9 +86,30 @@ void AudioInputHandler::readyRead()
     if (m_format.sampleSize() == 8)
     {
         if (m_format.sampleType() == QAudioFormat::UnSignedInt)
-            castDataToDouble<const quint8*>(m_buf, dataSize);
+            castDataToDouble<quint8>(m_buf, dataSize);
         else if (m_format.sampleType() == QAudioFormat::SignedInt)
-            castDataToDouble<const qint8*>(m_buf, dataSize);
+            castDataToDouble<qint8>(m_buf, dataSize);
+    }
+    else if (m_format.sampleSize() == 16)
+    {
+        if (m_format.sampleType() == QAudioFormat::UnSignedInt)
+            castDataToDouble<quint16>(m_buf, dataSize);
+        else if (m_format.sampleType() == QAudioFormat::SignedInt)
+            castDataToDouble<qint16>(m_buf, dataSize);
+    }
+    else if (m_format.sampleSize() == 32)
+    {
+        if (m_format.sampleType() == QAudioFormat::UnSignedInt)
+            castDataToDouble<quint32>(m_buf, dataSize);
+        else if (m_format.sampleType() == QAudioFormat::SignedInt)
+            castDataToDouble<qint32>(m_buf, dataSize);
+    }
+    else if (m_format.sampleSize() == 64)
+    {
+        if (m_format.sampleType() == QAudioFormat::UnSignedInt)
+            castDataToDouble<quint64>(m_buf, dataSize);
+        else if (m_format.sampleType() == QAudioFormat::SignedInt)
+            castDataToDouble<qint64>(m_buf, dataSize);
     }
 
     qDebug() << dataSize;

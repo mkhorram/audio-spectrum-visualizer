@@ -7,6 +7,7 @@
 #include <QAudioFormat>
 #include <QIODevice>
 #include <QObject>
+#include <QtEndian>
 
 #include <chrono>
 
@@ -30,6 +31,13 @@ private:
 
     std::chrono::time_point<std::chrono::high_resolution_clock> m_timePoint;
 
+signals:
+
+private slots:
+    void processAudioIn();
+    void stateChangeAudioIn(QAudio::State s);
+    void readyRead();
+
 public:
     explicit AudioInputHandler();
     ~AudioInputHandler();
@@ -48,31 +56,36 @@ private:
         Q_ASSERT(len % sampleBytes == 0);
         const long numSamples = len / sampleBytes;
 
+        m_sampleCount += numSamples;
         double maxVal = 0;
         double minVal = 0;
 
         const unsigned char *ptr = reinterpret_cast<const unsigned char *>(data);
         ptr += (m_channel * channelBytes);
 
-        for (int i = 0; i < numSamples; ++i)
-        {
-            double val =  *reinterpret_cast<T>(ptr);
-            if (maxVal < val)
-                maxVal = val;
-            else if (minVal > val)
-                minVal = val;
-            m_samples[i] = val;
-
-            ptr += sampleBytes;
-        }
+        if (m_format.byteOrder() == QAudioFormat::LittleEndian)
+            for (int i = 0; i < numSamples; ++i)
+            {
+                double val =  qFromLittleEndian<T>(ptr);
+                if (maxVal < val)
+                    maxVal = val;
+                else if (minVal > val)
+                    minVal = val;
+                m_samples[i] = val;
+                ptr += sampleBytes;
+            }
+        else if (m_format.byteOrder() == QAudioFormat::BigEndian)
+            for (int i = 0; i < numSamples; ++i)
+            {
+                double val =  qFromBigEndian<T>(ptr);
+                if (maxVal < val)
+                    maxVal = val;
+                else if (minVal > val)
+                    minVal = val;
+                m_samples[i] = val;
+                ptr += sampleBytes;
+            }
     }
-
-signals:
-
-private slots:
-    void processAudioIn();
-    void stateChangeAudioIn(QAudio::State s);
-    void readyRead();
 };
 
 #endif // AUDIOINPUTHANDLER_H
