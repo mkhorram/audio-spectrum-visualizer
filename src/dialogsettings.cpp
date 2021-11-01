@@ -68,6 +68,22 @@ void DialogSettings::on_btnOK_clicked()
 {
     m_deviceIndex = ui->cboActiveAudioInput->currentIndex();
     setGlobalFormatSettings();
+    if (!m_deviceInfo.isFormatSupported(m_globalFormatSettings))
+        m_globalFormatSettings = m_deviceInfo.nearestFormat(m_globalFormatSettings);
+    if (    m_globalFormatSettings.sampleSize()!=8 &&
+            m_globalFormatSettings.sampleSize()!=16 &&
+            m_globalFormatSettings.sampleSize()!=32 &&
+            m_globalFormatSettings.sampleSize()!=64)
+    {
+        if (m_globalFormatSettings.sampleSize()>8 && m_globalFormatSettings.sampleSize()<16)
+            m_globalFormatSettings.setSampleSize(8);
+        else if (m_globalFormatSettings.sampleSize()>16 && m_globalFormatSettings.sampleSize()<32)
+            m_globalFormatSettings.setSampleSize(16);
+        else if (m_globalFormatSettings.sampleSize()>32 && m_globalFormatSettings.sampleSize()<64)
+            m_globalFormatSettings.setSampleSize(32);
+        else
+            m_globalFormatSettings.setSampleSize(32);
+    }
     close();
 }
 
