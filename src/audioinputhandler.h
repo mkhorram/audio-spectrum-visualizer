@@ -24,7 +24,7 @@ private:
     long m_minSampleCount;
     long m_sampleCount;
 
-    const long long m_buf_length = 100000;
+    const long long m_buf_length;
     char * m_buf;
     std::vector<double> m_samples;
     int m_notifyInterval;
@@ -39,7 +39,7 @@ private slots:
     void readyRead();
 
 public:
-    explicit AudioInputHandler();
+    explicit AudioInputHandler(long long buf_length = 100000);
     ~AudioInputHandler();
 
     bool start(QAudioFormat format, QAudioDeviceInfo audioDeviceInfo);

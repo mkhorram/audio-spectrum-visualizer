@@ -1,7 +1,7 @@
 #include "audioinputhandler.h"
 #include <QDebug>
 
-AudioInputHandler::AudioInputHandler()
+AudioInputHandler::AudioInputHandler(long long buf_length) : m_buf_length(buf_length)
 {
     m_buf = new char[m_buf_length];
     m_samples.resize(m_buf_length);
@@ -110,6 +110,10 @@ void AudioInputHandler::readyRead()
             castDataToDouble<quint64>(m_buf, dataSize);
         else if (m_format.sampleType() == QAudioFormat::SignedInt)
             castDataToDouble<qint64>(m_buf, dataSize);
+    }
+    else if (m_format.sampleType() == QAudioFormat::Float)
+    {
+        castDataToDouble<float>(m_buf, dataSize);
     }
 
     qDebug() << dataSize;
