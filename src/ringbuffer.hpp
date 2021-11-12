@@ -22,7 +22,7 @@ public:
 
     inline unsigned long getlenghtToRead() { return ((m_bufSize+m_writePoint)-m_readPoint)%m_bufSize; }
 
-    void haveRead(unsigned long length)
+    void moveReadPoint(unsigned long length)
     {
         if (getlenghtToRead() < length)
             throw "The length, to be removed, is beyond the available data.";
@@ -50,6 +50,12 @@ public:
     {
         for (int i = 0; i < copyableVarVector.size(); ++i)
             this->insert(copyableVarVector[i]);
+    }
+
+    void copyToVector(std::vector<T> &varVector, unsigned int length)
+    {
+        for (int i = 0; i < length; ++i)
+            varVector.push_back(this[i]);
     }
 };
 
