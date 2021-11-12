@@ -4,9 +4,6 @@
 #include <vector>
 
 
-#define DEFAULTBUFFERSIZE 100000   // appropriate to store 96000 samples of 1 sec of audio inputs
-
-
 template <typename T>
 class RingBuffer
 {
@@ -19,7 +16,7 @@ private:
 public:
     RingBuffer(const RingBuffer&) = delete;
     RingBuffer& operator=(const RingBuffer&) = delete;
-    RingBuffer(unsigned long bufSize = DEFAULTBUFFERSIZE) : m_bufSize(bufSize) { m_buffer.reserve(m_bufSize); }
+    RingBuffer(unsigned long bufSize) : m_bufSize(bufSize) { m_buffer.reserve(m_bufSize); }
 
     unsigned long getBufSize() const { return m_bufSize; }
 
@@ -47,6 +44,12 @@ public:
             ++m_readPoint;
         m_buffer[m_writePoint] = copyableVar;
         ++m_writePoint;
+    }
+
+    void insert(std::vector<T> copyableVarVector)
+    {
+        for (int i = 0; i < copyableVarVector.size(); ++i)
+            this->insert(copyableVarVector[i]);
     }
 };
 
