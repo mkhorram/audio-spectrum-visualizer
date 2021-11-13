@@ -11,6 +11,11 @@
 
 #include <chrono>
 
+
+
+#include "ringbuffer.hpp"
+
+
 class AudioInputHandler : public QObject
 {
     Q_OBJECT
@@ -26,7 +31,7 @@ private:
 
     const long long m_buf_length;
     char * m_buf;
-    std::vector<double> m_samples;
+    RingBuffer<double> m_samples;
     int m_notifyInterval;
 
     std::chrono::time_point<std::chrono::high_resolution_clock> m_timePoint;
@@ -71,7 +76,7 @@ private:
                     maxVal = val;
                 else if (minVal > val)
                     minVal = val;
-                m_samples[i] = val;
+                m_samples.insert(val);
                 ptr += sampleBytes;
             }
         else if (m_format.byteOrder() == QAudioFormat::BigEndian)
@@ -82,7 +87,7 @@ private:
                     maxVal = val;
                 else if (minVal > val)
                     minVal = val;
-                m_samples[i] = val;
+                m_samples.insert(val);
                 ptr += sampleBytes;
             }
     }

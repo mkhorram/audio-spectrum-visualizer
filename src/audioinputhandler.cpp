@@ -1,10 +1,12 @@
 #include "audioinputhandler.h"
 #include <QDebug>
 
-AudioInputHandler::AudioInputHandler(long long buf_length) : m_buf_length(buf_length)
+#include <dj_fft.h>
+
+AudioInputHandler::AudioInputHandler(long long buf_length) :
+    m_samples(buf_length), m_buf_length(buf_length)
 {
     m_buf = new char[m_buf_length];
-    m_samples.resize(m_buf_length);
 }
 
 AudioInputHandler::~AudioInputHandler()
