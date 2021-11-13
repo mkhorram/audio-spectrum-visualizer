@@ -21,6 +21,8 @@ public:
 
     QAudioFormat getFormat();
     QAudioDeviceInfo getDeviceInfo();
+    long getFFTNeededSamples();
+    long getFrequencyNeededSamples();
 
 signals:
     void DialogSettingsClosed(QCloseEvent *event);

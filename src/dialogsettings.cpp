@@ -33,6 +33,16 @@ QAudioDeviceInfo DialogSettings::getDeviceInfo()
     return m_deviceInfo;
 }
 
+long DialogSettings::getFFTNeededSamples()
+{
+    return 2^12;
+}
+
+long DialogSettings::getFrequencyNeededSamples()
+{
+    return m_globalFormatSettings.sampleRate() * 2;
+}
+
 
 void DialogSettings::closeEvent(QCloseEvent *event)
 {
