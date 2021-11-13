@@ -35,7 +35,7 @@ QAudioDeviceInfo DialogSettings::getDeviceInfo()
 
 long DialogSettings::getFFTNeededSamples()
 {
-    return 2^12;
+    return ui->cboFFTSampleSet->currentText().toLong();
 }
 
 long DialogSettings::getFrequencyNeededSamples()
