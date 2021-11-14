@@ -26,8 +26,10 @@ private:
     QAudioDeviceInfo m_audioDeviceInfo;
     int m_channel = 0;
 
-    long m_minSampleCount;
-    long m_sampleCount;
+    long m_FFTNeededSamples;
+    long m_FFTSampleCount;
+    long m_frequencyNeededSamples;
+    long m_frequencySampleCount;
 
     const long long m_buf_length;
     char * m_buf;
@@ -47,21 +49,20 @@ public:
     explicit AudioInputHandler(long long buf_length = 100000);
     ~AudioInputHandler();
 
-    bool start(QAudioFormat format, QAudioDeviceInfo audioDeviceInfo);
+    bool start(QAudioFormat format, QAudioDeviceInfo audioDeviceInfo, long FFTNeededSamples, long frequencyNeededSamples);
     void stop();
 
 private:
-    void measureActualSampleRate(long long newReceivedSampleCount);
+    void checkSampleCount(long long receivedBytesCount);
 
     template <typename T>
-    void castDataToDouble(char * data, long len)
+    long castDataToDouble(char * data, long len)
     {
         const int channelBytes = m_format.sampleSize() / 8;
         const int sampleBytes = m_format.channelCount() * channelBytes;
         Q_ASSERT(len % sampleBytes == 0);
         const long numSamples = len / sampleBytes;
 
-        m_sampleCount += numSamples;
         double maxVal = 0;
         double minVal = 0;
 
@@ -90,6 +91,7 @@ private:
                 m_samples.insert(val);
                 ptr += sampleBytes;
             }
+        return numSamples;
     }
 };
 

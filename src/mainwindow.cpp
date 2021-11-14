@@ -82,9 +82,8 @@ void MainWindow::ChangeWorkingState(WorkState workingState)
 
 void MainWindow::on_tbStart_clicked()
 {
-    QAudioFormat format = m_dlgSettings.getFormat();
-    QAudioDeviceInfo deviceInfo = m_dlgSettings.getDeviceInfo();
-    m_audioHandler.start(format, deviceInfo);
+    m_audioHandler.start(m_dlgSettings.getFormat(), m_dlgSettings.getDeviceInfo(),
+                         m_dlgSettings.getFFTNeededSamples(), m_dlgSettings.getFrequencyNeededSamples() );
     ChangeWorkingState(WorkState::Running);
 }
 

@@ -16,10 +16,15 @@ AudioInputHandler::~AudioInputHandler()
 
 
 
-bool AudioInputHandler::start(QAudioFormat format, QAudioDeviceInfo audioDeviceInfo)
+bool AudioInputHandler::start(QAudioFormat format, QAudioDeviceInfo audioDeviceInfo,
+                              long FFTNeededSamples, long frequencyNeededSamples)
 {
     Q_ASSERT(format.sampleSize() % 8 == 0);
-    m_minSampleCount = format.sampleRate();
+
+    m_FFTNeededSamples = FFTNeededSamples;
+    m_FFTSampleCount = 0;
+    m_frequencyNeededSamples = frequencyNeededSamples;
+    m_frequencySampleCount = 0;
 
     m_format = format;
     m_audioDeviceInfo = audioDeviceInfo;
@@ -37,11 +42,11 @@ bool AudioInputHandler::start(QAudioFormat format, QAudioDeviceInfo audioDeviceI
 
     IODevice = m_AudioInput->start();
     QObject::connect(IODevice, &QBuffer::readyRead, this, &AudioInputHandler::readyRead);
-
     m_timePoint = std::chrono::high_resolution_clock::now();
-    qDebug() << "Device " << audioDeviceInfo.deviceName();
-    qDebug() << "sampleRate " << format.sampleRate();
-    qDebug() << "sampleSize " << format.sampleSize();
+
+    qDebug() << "Device " << audioDeviceInfo.deviceName()
+             << "   sampleRate " << format.sampleRate()
+             << "   sampleSize " << format.sampleSize();
 
     return true;
 }
@@ -55,17 +60,24 @@ void AudioInputHandler::stop()
     m_AudioInput = nullptr;
 }
 
-void AudioInputHandler::measureActualSampleRate(long long newReceivedSampleCount)
+void AudioInputHandler::checkSampleCount(long long numSamples)
 {
-    m_sampleCount += newReceivedSampleCount;
-    if (m_sampleCount >= m_minSampleCount)
+    m_FFTSampleCount += numSamples;
+    if (m_FFTSampleCount >= m_FFTNeededSamples)
+    {
+        // Do FFT analysis
+        m_FFTSampleCount -= m_FFTNeededSamples;
+    }
+
+    m_frequencySampleCount += numSamples;
+    if (m_frequencySampleCount >= m_frequencyNeededSamples)
     {
         std::chrono::time_point<std::chrono::high_resolution_clock> timePoint2 = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double>  dt = timePoint2-m_timePoint;
-        long actualSampleRate = static_cast<long>(m_sampleCount / dt.count());
-        qDebug() << "Sample Rate: " << actualSampleRate << " = " << m_sampleCount << " / " << dt.count();
+        long actualSampleRate = static_cast<long>(m_frequencySampleCount / dt.count());
+        qDebug() << "actualSampleRate: " << actualSampleRate << " = " << m_frequencySampleCount << " / " << dt.count();
         m_timePoint = timePoint2;
-        m_sampleCount = 0;
+        m_frequencySampleCount = 0;
     }
 }
 
@@ -83,42 +95,43 @@ void AudioInputHandler::readyRead()
 {
     long dataSize = IODevice->read(m_buf, m_buf_length);
 
-    measureActualSampleRate(dataSize);
+    long sampleCount = 0;
 
     if (m_format.sampleSize() == 8)
     {
         if (m_format.sampleType() == QAudioFormat::UnSignedInt)
-            castDataToDouble<quint8>(m_buf, dataSize);
+            sampleCount = castDataToDouble<quint8>(m_buf, dataSize);
         else if (m_format.sampleType() == QAudioFormat::SignedInt)
-            castDataToDouble<qint8>(m_buf, dataSize);
+            sampleCount = castDataToDouble<qint8>(m_buf, dataSize);
     }
     else if (m_format.sampleSize() == 16)
     {
         if (m_format.sampleType() == QAudioFormat::UnSignedInt)
-            castDataToDouble<quint16>(m_buf, dataSize);
+            sampleCount = castDataToDouble<quint16>(m_buf, dataSize);
         else if (m_format.sampleType() == QAudioFormat::SignedInt)
-            castDataToDouble<qint16>(m_buf, dataSize);
+            sampleCount = castDataToDouble<qint16>(m_buf, dataSize);
     }
     else if (m_format.sampleSize() == 32)
     {
         if (m_format.sampleType() == QAudioFormat::UnSignedInt)
-            castDataToDouble<quint32>(m_buf, dataSize);
+            sampleCount = castDataToDouble<quint32>(m_buf, dataSize);
         else if (m_format.sampleType() == QAudioFormat::SignedInt)
-            castDataToDouble<qint32>(m_buf, dataSize);
+            sampleCount = castDataToDouble<qint32>(m_buf, dataSize);
     }
     else if (m_format.sampleSize() == 64)
     {
         if (m_format.sampleType() == QAudioFormat::UnSignedInt)
-            castDataToDouble<quint64>(m_buf, dataSize);
+            sampleCount = castDataToDouble<quint64>(m_buf, dataSize);
         else if (m_format.sampleType() == QAudioFormat::SignedInt)
-            castDataToDouble<qint64>(m_buf, dataSize);
+            sampleCount = castDataToDouble<qint64>(m_buf, dataSize);
     }
     else if (m_format.sampleType() == QAudioFormat::Float)
     {
-        castDataToDouble<float>(m_buf, dataSize);
+        sampleCount = castDataToDouble<float>(m_buf, dataSize);
     }
+    checkSampleCount(sampleCount);
 
-    qDebug() << dataSize;
+    qDebug() << "sampleCount " << sampleCount << "    bytes " << dataSize;
 }
 
 
