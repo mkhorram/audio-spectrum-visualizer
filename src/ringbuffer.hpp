@@ -43,7 +43,7 @@ public:
         if (m_bufSize - getlenghtToRead() == 1)
             ++m_readPoint;
         m_buffer[m_writePoint] = copyableVar;
-        ++m_writePoint;
+        m_writePoint = (m_writePoint+1) % m_bufSize;
     }
 
     void insert(std::vector<T> copyableVarVector)
