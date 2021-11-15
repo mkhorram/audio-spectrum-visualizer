@@ -57,6 +57,11 @@ public:
         for (int i = 0; i < length; ++i)
             varVector.push_back(this[i]);
     }
+    void reset()
+    {
+        m_readPoint = 0;
+        m_writePoint = 0;
+    }
 };
 
 #endif // RINGBUFFER_H
