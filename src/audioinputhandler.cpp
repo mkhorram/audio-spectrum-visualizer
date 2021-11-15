@@ -3,10 +3,10 @@
 
 #include <dj_fft.h>
 
-AudioInputHandler::AudioInputHandler(long long buf_length) :
-    m_samples(buf_length), m_buf_length(buf_length)
+AudioInputHandler::AudioInputHandler(unsigned long long buf_length) : m_buf_length(buf_length)
 {
     m_buf = new char[m_buf_length];
+    m_FFTSamples.reserve(m_buf_length);
 }
 
 AudioInputHandler::~AudioInputHandler()
@@ -17,12 +17,14 @@ AudioInputHandler::~AudioInputHandler()
 
 
 bool AudioInputHandler::start(QAudioFormat format, QAudioDeviceInfo audioDeviceInfo,
-                              long FFTNeededSamples, long frequencyNeededSamples)
+                              unsigned long long FFTNeededSamples /* must be 2^n */,
+                              unsigned long long frequencyNeededSamples)
 {
     Q_ASSERT(format.sampleSize() % 8 == 0);
 
     m_FFTNeededSamples = FFTNeededSamples;
-    m_FFTSampleCount = 0;
+    m_FFTSamples.resize(m_FFTNeededSamples);
+
     m_frequencyNeededSamples = frequencyNeededSamples;
     m_frequencySampleCount = 0;
 
@@ -32,8 +34,6 @@ bool AudioInputHandler::start(QAudioFormat format, QAudioDeviceInfo audioDeviceI
         return false;
 
     if (m_AudioInput != nullptr) delete m_AudioInput;
-    m_AudioInput = nullptr;
-
     m_AudioInput = new QAudioInput(m_audioDeviceInfo, m_format, this);
     m_notifyInterval = m_AudioInput->notifyInterval();
 
@@ -42,7 +42,7 @@ bool AudioInputHandler::start(QAudioFormat format, QAudioDeviceInfo audioDeviceI
 
     IODevice = m_AudioInput->start();
     QObject::connect(IODevice, &QBuffer::readyRead, this, &AudioInputHandler::readyRead);
-    m_timePoint = std::chrono::high_resolution_clock::now();
+    m_beginTimePoint = std::chrono::high_resolution_clock::now();
 
     qDebug() << "Device " << audioDeviceInfo.deviceName()
              << "   sampleRate " << format.sampleRate()
@@ -60,25 +60,23 @@ void AudioInputHandler::stop()
     m_AudioInput = nullptr;
 }
 
-void AudioInputHandler::checkSampleCount(long long numSamples)
+void AudioInputHandler::checkActualSampleRate(unsigned long long numSamples)
 {
-    m_FFTSampleCount += numSamples;
-    if (m_FFTSampleCount >= m_FFTNeededSamples)
-    {
-        // Do FFT analysis
-        m_FFTSampleCount -= m_FFTNeededSamples;
-    }
-
     m_frequencySampleCount += numSamples;
     if (m_frequencySampleCount >= m_frequencyNeededSamples)
     {
-        std::chrono::time_point<std::chrono::high_resolution_clock> timePoint2 = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double>  dt = timePoint2-m_timePoint;
+        std::chrono::time_point<std::chrono::high_resolution_clock> endTimePoint = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double>  dt = endTimePoint - m_beginTimePoint;
         long actualSampleRate = static_cast<long>(m_frequencySampleCount / dt.count());
-        qDebug() << "actualSampleRate: " << actualSampleRate << " = " << m_frequencySampleCount << " / " << dt.count();
-        m_timePoint = timePoint2;
+        m_beginTimePoint = endTimePoint;
         m_frequencySampleCount = 0;
+        emit actualSampleRateEstimated(actualSampleRate);
     }
+}
+
+inline void AudioInputHandler::computeFFT()
+{
+    m_FFTOutput = dj::fft1d(m_FFTSamples, dj::fft_dir::DIR_FWD);
 }
 
 void AudioInputHandler::processAudioIn()
@@ -129,7 +127,7 @@ void AudioInputHandler::readyRead()
     {
         sampleCount = castDataToDouble<float>(m_buf, dataSize);
     }
-    checkSampleCount(sampleCount);
+    checkActualSampleRate(static_cast<unsigned long long>(sampleCount));
 
     qDebug() << "sampleCount " << sampleCount << "    bytes " << dataSize;
 }

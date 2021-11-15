@@ -10,10 +10,9 @@
 #include <QtEndian>
 
 #include <chrono>
+#include <complex>
+#include <vector>
 
-
-
-#include "ringbuffer.hpp"
 
 
 class AudioInputHandler : public QObject
@@ -26,17 +25,22 @@ private:
     QAudioDeviceInfo m_audioDeviceInfo;
     int m_channel = 0;
 
-    long m_FFTNeededSamples;
-    long m_FFTSampleCount;
-    long m_frequencyNeededSamples;
-    long m_frequencySampleCount;
+    unsigned long long m_frequencyNeededSamples;
+    unsigned long long m_frequencySampleCount;
 
-    const long long m_buf_length;
+    const unsigned long long m_buf_length;
     char * m_buf;
-    RingBuffer<double> m_samples;
-    int m_notifyInterval;
 
-    std::chrono::time_point<std::chrono::high_resolution_clock> m_timePoint;
+    unsigned long long m_FFTNeededSamples;
+    unsigned long long m_FFTSamplesWritePoint = 0;
+    std::vector<std::complex<double>> m_FFTSamples;
+    std::vector<std::complex<double>> m_FFTOutput;
+
+    double m_maxVal = 0;
+    double m_minVal = 0;
+
+    int m_notifyInterval;
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_beginTimePoint;
 
 signals:
 
@@ -45,15 +49,21 @@ private slots:
     void stateChangeAudioIn(QAudio::State s);
     void readyRead();
 
+signals:
+    void actualSampleRateEstimated(long actualSampleRate);
+    void fftOutputComputed(const std::vector<std::complex<double>> &fftOutput);
+    void minMaxSampleValuesComputed(double minVal, double maxVal);
+
 public:
-    explicit AudioInputHandler(long long buf_length = 100000);
+    explicit AudioInputHandler(unsigned long long buf_length = 100000);
     ~AudioInputHandler();
 
-    bool start(QAudioFormat format, QAudioDeviceInfo audioDeviceInfo, long FFTNeededSamples, long frequencyNeededSamples);
+    bool start(QAudioFormat format, QAudioDeviceInfo audioDeviceInfo, unsigned long long FFTNeededSamples, unsigned long long frequencyNeededSamples);
     void stop();
 
 private:
-    void checkSampleCount(long long receivedBytesCount);
+    void checkActualSampleRate(unsigned long long receivedBytesCount);
+    inline void computeFFT();
 
     template <typename T>
     long castDataToDouble(char * data, long len)
@@ -63,34 +73,40 @@ private:
         Q_ASSERT(len % sampleBytes == 0);
         const long numSamples = len / sampleBytes;
 
-        double maxVal = 0;
-        double minVal = 0;
-
         const unsigned char *ptr = reinterpret_cast<const unsigned char *>(data);
         ptr += (m_channel * channelBytes);
 
-        if (m_format.byteOrder() == QAudioFormat::LittleEndian)
-            for (int i = 0; i < numSamples; ++i)
+        for (int i = 0; i < numSamples; ++i)
+        {
+            double val = 0;
+            if (m_format.byteOrder() == QAudioFormat::LittleEndian)
+                val =  qFromLittleEndian<T>(ptr);
+            else if (m_format.byteOrder() == QAudioFormat::BigEndian)
+                val =  qFromBigEndian<T>(ptr);
+            else
+                throw "Unknown type! Type should be either LittleEndian or BigEndian.";
+
+            if (m_maxVal < val)
+                m_maxVal = val;
+            else if (m_minVal > val)
+                m_minVal = val;
+
+            m_FFTSamples[m_FFTSamplesWritePoint] = val;
+            ++m_FFTSamplesWritePoint;
+            if (m_FFTSamplesWritePoint == m_FFTNeededSamples)
             {
-                double val =  qFromLittleEndian<T>(ptr);
-                if (maxVal < val)
-                    maxVal = val;
-                else if (minVal > val)
-                    minVal = val;
-                m_samples.insert(val);
-                ptr += sampleBytes;
+                computeFFT();
+                emit fftOutputComputed(m_FFTOutput);
+                m_FFTSamplesWritePoint = 0;
+
+                emit minMaxSampleValuesComputed(m_minVal, m_minVal);
+                m_maxVal = 0;
+                m_minVal = 0;
             }
-        else if (m_format.byteOrder() == QAudioFormat::BigEndian)
-            for (int i = 0; i < numSamples; ++i)
-            {
-                double val =  qFromBigEndian<T>(ptr);
-                if (maxVal < val)
-                    maxVal = val;
-                else if (minVal > val)
-                    minVal = val;
-                m_samples.insert(val);
-                ptr += sampleBytes;
-            }
+
+            ptr += sampleBytes;
+        }
+
         return numSamples;
     }
 };
