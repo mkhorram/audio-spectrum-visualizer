@@ -14,7 +14,7 @@ DialogSettings::DialogSettings(QWidget *parent) :
     setGlobalFormatSettings();
 
     // disabled until implementation
-    ui->tabFFT->setEnabled(false);
+    //ui->tabFFT->setEnabled(false);
     ui->tabVisualization->setEnabled(false);
 }
 
@@ -38,9 +38,9 @@ long DialogSettings::getFFTNeededSamples()
     return ui->cboFFTSampleSet->currentText().toLong();
 }
 
-long DialogSettings::getFrequencyNeededSamples()
+long DialogSettings::getFrequencyMeasuringNeededSamples()
 {
-    return m_globalFormatSettings.sampleRate() * 2;
+    return m_globalFormatSettings.sampleRate();
 }
 
 
@@ -52,7 +52,6 @@ void DialogSettings::closeEvent(QCloseEvent *event)
 void DialogSettings::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event)
-    //TODO: restore the default settings
     resetAudioFormatSettingsForm();
 }
 
@@ -80,10 +79,7 @@ void DialogSettings::on_btnOK_clicked()
     setGlobalFormatSettings();
     if (!m_deviceInfo.isFormatSupported(m_globalFormatSettings))
         m_globalFormatSettings = m_deviceInfo.nearestFormat(m_globalFormatSettings);
-    if (    m_globalFormatSettings.sampleSize()!=8 &&
-            m_globalFormatSettings.sampleSize()!=16 &&
-            m_globalFormatSettings.sampleSize()!=32 &&
-            m_globalFormatSettings.sampleSize()!=64)
+    if ( m_globalFormatSettings.sampleSize()%8 != 0)
     {
         if (m_globalFormatSettings.sampleSize()>8 && m_globalFormatSettings.sampleSize()<16)
             m_globalFormatSettings.setSampleSize(8);

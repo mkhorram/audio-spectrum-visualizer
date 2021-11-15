@@ -85,7 +85,7 @@ void MainWindow::ChangeWorkingState(WorkState workingState)
 void MainWindow::on_tbStart_clicked()
 {
     bool result = m_audioHandler.start(m_dlgSettings.getFormat(), m_dlgSettings.getDeviceInfo(),
-                                       m_dlgSettings.getFFTNeededSamples(), m_dlgSettings.getFrequencyNeededSamples() );
+                                       m_dlgSettings.getFFTNeededSamples(), m_dlgSettings.getFrequencyMeasuringNeededSamples() );
     if (result)
         ChangeWorkingState(WorkState::Running);
 }

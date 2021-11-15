@@ -22,7 +22,7 @@ public:
     QAudioFormat getFormat();
     QAudioDeviceInfo getDeviceInfo();
     long getFFTNeededSamples();
-    long getFrequencyNeededSamples();
+    long getFrequencyMeasuringNeededSamples();
 
 signals:
     void DialogSettingsClosed(QCloseEvent *event);
