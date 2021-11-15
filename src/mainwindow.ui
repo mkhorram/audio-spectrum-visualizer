@@ -81,7 +81,7 @@
      </size>
     </property>
     <property name="text">
-     <string>Sample Rate: 192000 Hz</string>
+     <string>Sample Rate: </string>
     </property>
    </widget>
    <widget class="QLabel" name="lblStopRunStatus">

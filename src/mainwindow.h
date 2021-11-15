@@ -40,8 +40,9 @@ public slots:
 
 private slots:
     void on_tbStart_clicked();
-
     void on_tbStop_clicked();
+
+    void actualSampleRateEstimated(long actualSampleRate);
 
 private:
     Ui::MainWindow *ui;

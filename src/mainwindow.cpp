@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setCentralWidget( splitter );
 
     connect(&m_dlgSettings, &DialogSettings::DialogSettingsClosed, this, &MainWindow::dialogueSettingsClosed);
+    connect(&m_audioHandler, &AudioInputHandler::actualSampleRateEstimated, this, &MainWindow::actualSampleRateEstimated);
 
     ChangeWorkingState(WorkState::Stopped);
 }
@@ -56,39 +57,46 @@ void MainWindow::dialogueSettingsClosed(QCloseEvent *event)
 
 void MainWindow::ChangeWorkingState(WorkState workingState)
 {
-    if (workingState == WorkState::ShowingSettingsDialogue ||
-            workingState == WorkState::NoSettings)
-    {
-        ui->tbStart->setEnabled(false);
-        ui->tbStop->setEnabled(false);
-        ui->tbSettings->setEnabled(true);
-        m_workingState = workingState;
-    }
-    else if (workingState == WorkState::Stopped)
+    if (workingState == WorkState::Stopped)
     {
         ui->tbStart->setEnabled(true);
         ui->tbStop->setEnabled(false);
         ui->tbSettings->setEnabled(true);
         m_workingState = workingState;
+        ui->lblSampleRate->setText("Stopped");
     }
-    else
+    else if (workingState == WorkState::Running)
     {
         ui->tbStart->setEnabled(false);
         ui->tbStop->setEnabled(true);
         ui->tbSettings->setEnabled(false);
+        m_workingState = workingState;
+        ui->lblSampleRate->setText("Running");
+    }
+    else //if (workingState == WorkState::ShowingSettingsDialogue || workingState == WorkState::NoSettings)
+    {
+        ui->tbStart->setEnabled(false);
+        ui->tbStop->setEnabled(false);
+        ui->tbSettings->setEnabled(true);
         m_workingState = workingState;
     }
 }
 
 void MainWindow::on_tbStart_clicked()
 {
-    m_audioHandler.start(m_dlgSettings.getFormat(), m_dlgSettings.getDeviceInfo(),
-                         m_dlgSettings.getFFTNeededSamples(), m_dlgSettings.getFrequencyNeededSamples() );
-    ChangeWorkingState(WorkState::Running);
+    bool result = m_audioHandler.start(m_dlgSettings.getFormat(), m_dlgSettings.getDeviceInfo(),
+                                       m_dlgSettings.getFFTNeededSamples(), m_dlgSettings.getFrequencyNeededSamples() );
+    if (result)
+        ChangeWorkingState(WorkState::Running);
 }
 
 void MainWindow::on_tbStop_clicked()
 {
     m_audioHandler.stop();
     ChangeWorkingState(WorkState::Stopped);
+}
+
+void MainWindow::actualSampleRateEstimated(long actualSampleRate)
+{
+    ui->lblSampleRate->setText("Measured Sample Rate: " + QString::number(actualSampleRate));
 }
