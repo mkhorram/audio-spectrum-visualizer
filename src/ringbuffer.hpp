@@ -52,10 +52,10 @@ public:
             this->insert(copyableVarVector[i]);
     }
 
-    void copyToVector(std::vector<T> &varVector, unsigned int length)
+    void copyToVector(std::vector<T> &varVector, unsigned int fromIndex, unsigned int length)
     {
         for (int i = 0; i < length; ++i)
-            varVector.push_back(this[i]);
+            varVector.push_back(this[fromIndex+i]);
     }
     void reset()
     {
