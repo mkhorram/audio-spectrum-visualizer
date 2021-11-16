@@ -36,8 +36,8 @@ private:
     std::vector<std::complex<double>> m_FFTSamples;
     std::vector<std::complex<double>> m_FFTOutput;
 
-    double m_maxVal = 0;
-    double m_minVal = 0;
+    double m_highVal = 0;
+    double m_lowVal = 0;
 
     int m_notifyInterval;
     std::chrono::time_point<std::chrono::high_resolution_clock> m_beginTimePoint;
@@ -52,7 +52,7 @@ private slots:
 signals:
     void actualSampleRateEstimated(long actualSampleRate);
     void fftOutputComputed(const std::vector<std::complex<double>> &fftOutput);
-    void minMaxSampleValuesComputed(double minVal, double maxVal);
+    void lowHighSampleValuesComputed(double lowInput, double highInput);
 
 public:
     explicit AudioInputHandler(unsigned long long buf_length = 100000);
@@ -86,10 +86,10 @@ private:
             else
                 throw "Unknown type! Type should be either LittleEndian or BigEndian.";
 
-            if (m_maxVal < val)
-                m_maxVal = val;
-            else if (m_minVal > val)
-                m_minVal = val;
+            if (m_highVal < val)
+                m_highVal = val;
+            else if (m_lowVal > val)
+                m_lowVal = val;
 
             m_FFTSamples[m_FFTSamplesWritePoint] = val;
             ++m_FFTSamplesWritePoint;
@@ -99,9 +99,9 @@ private:
                 emit fftOutputComputed(m_FFTOutput);
                 m_FFTSamplesWritePoint = 0;
 
-                emit minMaxSampleValuesComputed(m_minVal, m_minVal);
-                m_maxVal = 0;
-                m_minVal = 0;
+                emit lowHighSampleValuesComputed(m_lowVal, m_highVal);
+                m_highVal = 0;
+                m_lowVal = 0;
             }
 
             ptr += sampleBytes;
