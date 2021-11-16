@@ -37,7 +37,6 @@ public:
     explicit WidgetAmplitude(QWidget *parent = nullptr, unsigned long bufSize = 5000);
 
     void setLevelRagne(double rangeMinValue, double rangeMaxValue);
-    void insertLevelBar(double lowInput, double highInput);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -45,6 +44,7 @@ protected:
 signals:
 
 public slots:
+    void insertLevelBar(double lowInput, double highInput);
 
 };
 

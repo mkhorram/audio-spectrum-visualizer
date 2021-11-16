@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(&m_dlgSettings, &DialogSettings::DialogSettingsClosed, this, &MainWindow::dialogueSettingsClosed);
     connect(&m_audioHandler, &AudioInputHandler::actualSampleRateEstimated, this, &MainWindow::actualSampleRateEstimated);
+    connect(&m_audioHandler, &AudioInputHandler::lowHighSampleValuesComputed, m_wgtAmplitude, &WidgetAmplitude::insertLevelBar);
 
     ChangeWorkingState(WorkState::Stopped);
 }
