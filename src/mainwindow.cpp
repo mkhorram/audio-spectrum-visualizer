@@ -85,10 +85,52 @@ void MainWindow::ChangeWorkingState(WorkState workingState)
 
 void MainWindow::on_tbStart_clicked()
 {
-    bool result = m_audioHandler.start(m_dlgSettings.getFormat(), m_dlgSettings.getDeviceInfo(),
+    QAudioFormat format = m_dlgSettings.getFormat();
+    bool result = m_audioHandler.start(format, m_dlgSettings.getDeviceInfo(),
                                        m_dlgSettings.getFFTNeededSamples(), m_dlgSettings.getFrequencyMeasuringNeededSamples() );
     if (result)
+    {
         ChangeWorkingState(WorkState::Running);
+
+        int sampleSize = format.sampleSize();
+        auto sampleType = format.sampleType();
+        if (sampleSize == 8)
+        {
+            if (sampleType == QAudioFormat::UnSignedInt)
+                m_wgtAmplitude->setLevelRagne(0, 255);
+            else if (sampleType == QAudioFormat::SignedInt)
+                m_wgtAmplitude->setLevelRagne(-128, 127);
+        }
+        else if (sampleSize == 16)
+        {
+            if (sampleType == QAudioFormat::UnSignedInt)
+                m_wgtAmplitude->setLevelRagne(0, 65535);
+            else if (sampleType == QAudioFormat::SignedInt)
+                m_wgtAmplitude->setLevelRagne(-32768, 32767);
+        }
+        else if (sampleSize == 32)
+        {
+            if (sampleType == QAudioFormat::UnSignedInt)
+                m_wgtAmplitude->setLevelRagne(0, 4294967295);
+            else if (sampleType == QAudioFormat::SignedInt)
+                m_wgtAmplitude->setLevelRagne(-2147483648, 2147483647);
+        }
+        else if (sampleSize == 64)
+        {
+            if (sampleType == QAudioFormat::UnSignedInt)
+                m_wgtAmplitude->setLevelRagne(0, 4294967295);
+            else if (sampleType == QAudioFormat::SignedInt)
+                m_wgtAmplitude->setLevelRagne(-9223372036854775808.0, 9223372036854775807);
+        }
+        else if (format.sampleType() == QAudioFormat::Float)
+        {
+            // TODO: needs testing on appropriate sound cards
+            if (sampleType == QAudioFormat::UnSignedInt)
+                m_wgtAmplitude->setLevelRagne(0, 1);
+            else if (sampleType == QAudioFormat::SignedInt)
+                m_wgtAmplitude->setLevelRagne(-1, 1);
+        }
+    }
 }
 
 void MainWindow::on_tbStop_clicked()
