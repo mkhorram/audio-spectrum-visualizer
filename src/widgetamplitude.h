@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QPainter>
 
+#include <cmath>
+
 #include "ringbuffer.hpp"
 
 class WidgetAmplitude : public QWidget
@@ -23,20 +25,22 @@ class WidgetAmplitude : public QWidget
 private:
     double m_rangeMinValue;
     double m_rangeMaxValue;
-    RingBuffer<BarAmplitudeValues> m_amplitudes;
+    RingBuffer<BarAmplitudeValues> m_amplitudesBuffer;
 
-    int m_leftMargin = 10;
-    int m_rightMargin = 10;
-    int m_topMargin = 10;
-    int m_bottomMargin = 10;
+    int m_leftMargin = 5;
+    int m_rightMargin = 5;
+    int m_topMargin = 5;
+    int m_bottomMargin = 5;
 
-    int rowHight = 2;
-    int newRowHight = 5;
+    unsigned int m_barThickness = 2;
+    unsigned int m_newBarThickness = 5;
 
 public:
     explicit WidgetAmplitude(QWidget *parent = nullptr, unsigned long bufSize = 5000);
 
     void setLevelRagne(double rangeMinValue, double rangeMaxValue);
+    void setBarThicknesses(unsigned int barThickness, unsigned int newBarThickness)
+    {m_barThickness = barThickness;    m_newBarThickness = newBarThickness;}
 
 protected:
     void paintEvent(QPaintEvent *event) override;
