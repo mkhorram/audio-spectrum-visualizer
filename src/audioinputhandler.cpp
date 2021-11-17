@@ -1,5 +1,4 @@
 #include "audioinputhandler.h"
-#include <QDebug>
 
 #include <dj_fft.h>
 
@@ -43,10 +42,6 @@ bool AudioInputHandler::start(QAudioFormat format, QAudioDeviceInfo audioDeviceI
     IODevice = m_AudioInput->start();
     QObject::connect(IODevice, &QBuffer::readyRead, this, &AudioInputHandler::readyRead);
     m_beginTimePoint = std::chrono::high_resolution_clock::now();
-
-    qDebug() << "Device " << audioDeviceInfo.deviceName()
-             << "   sampleRate " << format.sampleRate()
-             << "   sampleSize " << format.sampleSize();
 
     return true;
 }
@@ -128,8 +123,6 @@ void AudioInputHandler::readyRead()
         sampleCount = castDataToDouble<float>(m_buf, dataSize);
     }
     checkActualSampleRate(static_cast<unsigned long long>(sampleCount));
-
-    qDebug() << "sampleCount " << sampleCount << "    bytes " << dataSize;
 }
 
 
