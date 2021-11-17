@@ -64,7 +64,7 @@ void MainWindow::ChangeWorkingState(WorkState workingState)
         ui->tbStop->setEnabled(false);
         ui->tbSettings->setEnabled(true);
         m_workingState = workingState;
-        ui->lblSampleRate->setText("Stopped");
+        ui->lblStopRunStatus->setText("Stopped");
     }
     else if (workingState == WorkState::Running)
     {
@@ -72,7 +72,7 @@ void MainWindow::ChangeWorkingState(WorkState workingState)
         ui->tbStop->setEnabled(true);
         ui->tbSettings->setEnabled(false);
         m_workingState = workingState;
-        ui->lblSampleRate->setText("Running");
+        ui->lblStopRunStatus->setText("Running");
     }
     else //if (workingState == WorkState::ShowingSettingsDialogue || workingState == WorkState::NoSettings)
     {

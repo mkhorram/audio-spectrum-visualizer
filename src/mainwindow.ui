@@ -68,8 +68,8 @@
    <widget class="QLabel" name="lblSampleRate">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>40</y>
+      <x>240</x>
+      <y>50</y>
       <width>125</width>
       <height>16</height>
      </rect>
@@ -87,8 +87,8 @@
    <widget class="QLabel" name="lblStopRunStatus">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>40</y>
+      <x>170</x>
+      <y>50</y>
       <width>50</width>
       <height>16</height>
      </rect>
