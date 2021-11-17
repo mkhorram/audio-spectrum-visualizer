@@ -12,10 +12,6 @@ DialogSettings::DialogSettings(QWidget *parent) :
 
     on_btnRefresh_clicked();
     setGlobalFormatSettings();
-
-    // disabled until implementation
-    //ui->tabFFT->setEnabled(false);
-    ui->tabVisualization->setEnabled(false);
 }
 
 DialogSettings::~DialogSettings()
@@ -41,6 +37,16 @@ long DialogSettings::getFFTNeededSamples()
 long DialogSettings::getFrequencyMeasuringNeededSamples()
 {
     return m_globalFormatSettings.sampleRate();
+}
+
+int DialogSettings::getRowPixelHeightPerProcess()
+{
+    return ui->cbHistoryRowHeight->value();
+}
+
+int DialogSettings::getNewRowPixelHeightPerProcess()
+{
+    return ui->sbNewRowHeight->value();
 }
 
 

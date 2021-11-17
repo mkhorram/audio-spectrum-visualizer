@@ -23,6 +23,8 @@ public:
     QAudioDeviceInfo getDeviceInfo();
     long getFFTNeededSamples();
     long getFrequencyMeasuringNeededSamples();
+    int getRowPixelHeightPerProcess();
+    int getNewRowPixelHeightPerProcess();
 
 signals:
     void DialogSettingsClosed(QCloseEvent *event);
