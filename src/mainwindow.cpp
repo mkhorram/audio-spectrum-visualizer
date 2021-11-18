@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -91,6 +92,9 @@ void MainWindow::on_tbStart_clicked()
     if (result)
     {
         ChangeWorkingState(WorkState::Running);
+
+        m_wgtAmplitude->setBarThicknesses(m_dlgSettings.getRowPixelHeightPerProcess(),
+                                          m_dlgSettings.getNewRowPixelHeightPerProcess());
 
         int sampleSize = format.sampleSize();
         auto sampleType = format.sampleType();
