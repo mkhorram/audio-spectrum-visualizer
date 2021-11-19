@@ -79,7 +79,10 @@ private:
         for (int i = 0; i < numSamples; ++i)
         {
             double val = 0;
-            if (m_format.byteOrder() == QAudioFormat::LittleEndian)
+
+            if (m_format.sampleType() == QAudioFormat::Float)
+                val =  qAbs(*reinterpret_cast<const float*>(ptr));
+            else if (m_format.byteOrder() == QAudioFormat::LittleEndian)
                 val =  qFromLittleEndian<T>(ptr);
             else if (m_format.byteOrder() == QAudioFormat::BigEndian)
                 val =  qFromBigEndian<T>(ptr);
