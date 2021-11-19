@@ -119,7 +119,7 @@
      </size>
     </property>
     <property name="text">
-     <string>Endinanness: LittleEndian</string>
+     <string>Audio Format (to be shown in statusbar</string>
     </property>
    </widget>
   </widget>

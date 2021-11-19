@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     splitter->setStretchFactor(0,4);
     splitter->setStretchFactor(1,1);
     this->setCentralWidget( splitter );
+    updateFormatInStatusbar();
 
     connect(&m_dlgSettings, &DialogSettings::DialogSettingsClosed, this, &MainWindow::dialogueSettingsClosed);
     connect(&m_audioHandler, &AudioInputHandler::actualSampleRateEstimated, this, &MainWindow::actualSampleRateEstimated);
@@ -55,7 +56,9 @@ void MainWindow::dialogueSettingsClosed(QCloseEvent *event)
 {
     Q_UNUSED(event)
     ChangeWorkingState(WorkState::Stopped);
+    updateFormatInStatusbar();
 }
+
 
 void MainWindow::ChangeWorkingState(WorkState workingState)
 {
@@ -82,6 +85,28 @@ void MainWindow::ChangeWorkingState(WorkState workingState)
         ui->tbSettings->setEnabled(true);
         m_workingState = workingState;
     }
+}
+
+void MainWindow::updateFormatInStatusbar()
+{
+    QAudioFormat format = m_dlgSettings.getFormat();
+    QString sampleByteOrder = (format.byteOrder() == QAudioFormat::LittleEndian)? "LittleEndian" : "BigEndian";
+    QString sampleType;
+    if (format.sampleType() == QAudioFormat::SignedInt)
+        sampleType = "SignedInt";
+    else if (format.sampleType() == QAudioFormat::UnSignedInt)
+        sampleType = "UnSignedInt";
+    else if (format.sampleType() == QAudioFormat::Float)
+        sampleType = "Float";
+    else
+        sampleType = "Unknown";
+
+    ui->lblConfiguredAudioFormat->setText(
+                "Sample Rate: " + QString::number(format.sampleRate()) + " Hz | "
+                "Sample Size: " + QString::number(format.sampleSize()) + " bit | "
+                "Sample Type: " + sampleType + " | "
+                "Byte Order: " + sampleByteOrder
+                );
 }
 
 void MainWindow::on_tbStart_clicked()

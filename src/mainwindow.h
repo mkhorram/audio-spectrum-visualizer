@@ -13,6 +13,8 @@
 #include "widgetamplitude.h"
 #include "widgetfrequencyviewer.h"
 
+#include <QString>
+
 enum class WorkState
 {
     Running,
@@ -55,6 +57,7 @@ private:
 
 private:
     void ChangeWorkingState(WorkState workingState);
+    void updateFormatInStatusbar();
 };
 
 #endif // MAINWINDOW_H
