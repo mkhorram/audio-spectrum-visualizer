@@ -21,6 +21,8 @@ bool AudioInputHandler::start(QAudioFormat format, QAudioDeviceInfo audioDeviceI
 {
     Q_ASSERT(format.sampleSize() % 8 == 0);
 
+    m_frequencyConversionRatio = double(m_format.sampleRate()) / FFTNeededSamples;
+
     m_FFTNeededSamples = FFTNeededSamples;
     m_FFTSamples.resize(m_FFTNeededSamples);
 
@@ -71,7 +73,8 @@ void AudioInputHandler::checkActualSampleRate(unsigned long long numSamples)
 
 inline void AudioInputHandler::computeFFT()
 {
-    m_FFTOutput = dj::fft1d(m_FFTSamples, dj::fft_dir::DIR_FWD);
+    m_FFTOutput = std::shared_ptr<std::vector<std::complex<double>>> (new std::vector<std::complex<double>>);
+    *m_FFTOutput = dj::fft1d(m_FFTSamples, dj::fft_dir::DIR_FWD);
 }
 
 void AudioInputHandler::processAudioIn()

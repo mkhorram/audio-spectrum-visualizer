@@ -12,6 +12,7 @@
 #include <chrono>
 #include <complex>
 #include <vector>
+#include <memory>
 
 
 
@@ -31,10 +32,11 @@ private:
     const unsigned long long m_buf_length;
     char * m_buf;
 
+    double m_frequencyConversionRatio;
     unsigned long long m_FFTNeededSamples;
     unsigned long long m_FFTSamplesWritePoint = 0;
     std::vector<std::complex<double>> m_FFTSamples;
-    std::vector<std::complex<double>> m_FFTOutput;
+    std::shared_ptr<std::vector<std::complex<double>>> m_FFTOutput;
 
     double m_highVal = 0;
     double m_lowVal = 0;
@@ -51,7 +53,7 @@ private slots:
 
 signals:
     void actualSampleRateEstimated(long actualSampleRate);
-    void fftOutputComputed(const std::vector<std::complex<double>> &fftOutput);
+    void fftOutputComputed(std::shared_ptr<std::vector<std::complex<double>>> fftOutput, double ratio);
     void lowHighSampleValuesComputed(double lowInput, double highInput);
 
 public:
@@ -99,7 +101,7 @@ private:
             if (m_FFTSamplesWritePoint == m_FFTNeededSamples)
             {
                 computeFFT();
-                emit fftOutputComputed(m_FFTOutput);
+                emit fftOutputComputed(m_FFTOutput, m_frequencyConversionRatio);
                 m_FFTSamplesWritePoint = 0;
 
                 emit lowHighSampleValuesComputed(m_lowVal, m_highVal);
