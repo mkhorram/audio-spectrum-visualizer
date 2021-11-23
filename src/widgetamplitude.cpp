@@ -17,6 +17,7 @@ void WidgetAmplitude::insertLevelBar(double lowInput, double highInput)
 {
     BarAmplitudeValues bav(lowInput, highInput);
     m_amplitudesBuffer.insert(bav);
+    this->update();
 }
 
 void WidgetAmplitude::paintEvent(QPaintEvent *event)
@@ -32,13 +33,16 @@ void WidgetAmplitude::paintEvent(QPaintEvent *event)
     int drawWidth = painter.viewport().right() - (m_rightMargin+m_leftMargin);
     int drawHeight = painter.viewport().bottom() - (m_bottomMargin+m_topMargin);
 
-    painter.fillRect(drawLeftEdge, drawTopEdge, drawWidth, drawHeight, Qt::blue);
+    painter.fillRect(painter.viewport().left(),
+                     painter.viewport().top(),
+                     painter.viewport().right(),
+                     painter.viewport().bottom(), QColor(0,10,80));
 
     unsigned long newestIndex = readableLength - 1;
     int barTop = drawTopEdge + drawHeight - m_newBarThickness;
     int barLeft = drawLeftEdge + (m_amplitudesBuffer[newestIndex].lowInput - m_rangeMinValue) / (m_rangeMaxValue-m_rangeMinValue) * drawWidth;
     int barWidth = (m_amplitudesBuffer[newestIndex].highInput - m_amplitudesBuffer[newestIndex].lowInput) / (m_rangeMaxValue-m_rangeMinValue) * drawWidth;
-    painter.fillRect(barLeft, barTop, barWidth, m_newBarThickness, Qt::red);
+    painter.fillRect(barLeft, barTop, barWidth, m_newBarThickness, QColor(255,190,190));
 
     unsigned long barIndex = newestIndex;
     while (barIndex > 0)
@@ -51,10 +55,9 @@ void WidgetAmplitude::paintEvent(QPaintEvent *event)
             break;
         barLeft = drawLeftEdge + (lowInput - m_rangeMinValue) / (m_rangeMaxValue-m_rangeMinValue) * drawWidth;
         int barWidth = (highInput - lowInput) / (m_rangeMaxValue-m_rangeMinValue) * drawWidth;
-        painter.fillRect(barLeft, barTop, barWidth, m_barThickness, Qt::darkBlue);
+        painter.fillRect(barLeft, barTop, barWidth, m_barThickness, QColor(110,110,255));
     }
 
     painter.setPen(Qt::black);
     painter.drawRect(drawLeftEdge, drawTopEdge, drawWidth, drawHeight);
-    this->update();
 }
