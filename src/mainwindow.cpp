@@ -18,11 +18,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statusbar->addWidget(ui->lblConfiguredAudioFormat);
 
     QSplitter *splitter = new QSplitter(Qt::Horizontal, this);
-    m_wgtAmplitude = new WidgetAmplitude(this);
     m_wgtFrequencyViewer = new WidgetFrequencyViewer(this);
-    splitter->addWidget(m_wgtAmplitude);
+    m_wgtAmplitude = new WidgetAmplitude(this);
     splitter->addWidget(m_wgtFrequencyViewer);
-    splitter->setStretchFactor(0,4);
+    splitter->addWidget(m_wgtAmplitude);
+    splitter->setStretchFactor(0,3);
     splitter->setStretchFactor(1,1);
     this->setCentralWidget( splitter );
     updateFormatInStatusbar();
