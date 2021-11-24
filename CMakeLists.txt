@@ -29,6 +29,8 @@ add_executable(${PROJECT_NAME}
     src/widgetamplitude.h
     src/widgetfrequencyviewer.cpp
     src/widgetfrequencyviewer.h
+    src/spectrumimagegenerator.cpp
+    src/spectrumimagegenerator.h
 
     src/audioinputhandler.cpp
     src/audioinputhandler.h
