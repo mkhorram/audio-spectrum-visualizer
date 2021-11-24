@@ -1,14 +1,11 @@
 #ifndef WIDGETFREQUENCYVIEWER_H
 #define WIDGETFREQUENCYVIEWER_H
 
-#include <QImage>
 #include <QPainter>
 #include <QResizeEvent>
 #include <QWidget>
 
-#include <complex>
-#include <memory>
-#include <vector>
+#include "spectrumimagegenerator.h"
 
 class WidgetFrequencyViewer : public QWidget
 {

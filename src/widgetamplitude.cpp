@@ -47,7 +47,6 @@ void WidgetAmplitude::paintEvent(QPaintEvent *event)
     unsigned long barIndex = newestIndex;
     while (barIndex > 0)
     {
-        --barIndex;
         double &lowInput = m_amplitudesBuffer[barIndex].lowInput;
         double &highInput = m_amplitudesBuffer[barIndex].highInput;
         barTop -= m_barThickness;
@@ -56,6 +55,7 @@ void WidgetAmplitude::paintEvent(QPaintEvent *event)
         barLeft = drawLeftEdge + (lowInput - m_rangeMinValue) / (m_rangeMaxValue-m_rangeMinValue) * drawWidth;
         int barWidth = (highInput - lowInput) / (m_rangeMaxValue-m_rangeMinValue) * drawWidth;
         painter.fillRect(barLeft, barTop, barWidth, m_barThickness, QColor(110,110,255));
+        --barIndex;
     }
 
     painter.setPen(Qt::black);
