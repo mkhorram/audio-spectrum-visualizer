@@ -12,6 +12,7 @@ class WidgetFrequencyViewer : public QWidget
     Q_OBJECT
 private:
     QImage m_imageBuffer;
+    SpectrumImageGenerator m_imageGenerator;
 
 public:
     explicit WidgetFrequencyViewer(QWidget *parent = nullptr);

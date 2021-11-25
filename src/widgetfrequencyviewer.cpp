@@ -20,5 +20,6 @@ void WidgetFrequencyViewer::resizeEvent(QResizeEvent *event)
 
 void WidgetFrequencyViewer::insertNewSpectrumRow(std::shared_ptr<std::vector<std::complex<double> > > FFTOutput, double ratio)
 {
-    //
+    m_imageGenerator.insertNewSpectrumRow(FFTOutput, ratio);
+    update();
 }
