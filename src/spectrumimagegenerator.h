@@ -8,16 +8,14 @@
 #include <vector>
 
 #include "ringbuffer.hpp"
+#include "common.hpp"
+
 
 class SpectrumImageGenerator
 {
-    struct FFTAnalysis{
-        std::shared_ptr<std::vector<std::complex<double>>> rowBuffer;
-        double ratio;
-    };
 
 private:
-    RingBuffer<FFTAnalysis> m_buffer;
+    RingBuffer<FFTAnalysisResult> m_buffer;
 public:
     SpectrumImageGenerator();
     void insertNewSpectrumRow(std::shared_ptr<std::vector<std::complex<double>>> FFTOutput, double ratio);

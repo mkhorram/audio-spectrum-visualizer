@@ -35,7 +35,7 @@ add_executable(${PROJECT_NAME}
     src/audioinputhandler.cpp
     src/audioinputhandler.h
     src/ringbuffer.hpp
-
+    src/common.hpp
     src/resource_file.qrc)
 
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Multimedia)
