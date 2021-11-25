@@ -6,6 +6,7 @@
 #include <QWidget>
 
 #include "spectrumimagegenerator.h"
+#include "common.hpp"
 
 class WidgetFrequencyViewer : public QWidget
 {
@@ -24,7 +25,7 @@ protected:
 signals:
 
 public slots:
-    void insertNewSpectrumRow(std::shared_ptr<std::vector<std::complex<double>>> FFTOutput, double ratio);
+    void insertNewSpectrumRow(FFTAnalysisResult FFTOutput);
 };
 
 #endif // WIDGETFREQUENCYVIEWER_H

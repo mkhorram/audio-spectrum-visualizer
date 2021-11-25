@@ -73,8 +73,8 @@ void AudioInputHandler::checkActualSampleRate(unsigned long long numSamples)
 
 inline void AudioInputHandler::computeFFT()
 {
-    m_FFTOutput = std::shared_ptr<std::vector<std::complex<double>>> (new std::vector<std::complex<double>>);
-    *m_FFTOutput = dj::fft1d(m_FFTSamples, dj::fft_dir::DIR_FWD);
+    m_FFTOutput.rowBuffer = std::shared_ptr<std::vector<std::complex<double>>> (new std::vector<std::complex<double>>);
+    *m_FFTOutput.rowBuffer = dj::fft1d(m_FFTSamples, dj::fft_dir::DIR_FWD);
 }
 
 void AudioInputHandler::processAudioIn()

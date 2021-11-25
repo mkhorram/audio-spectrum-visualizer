@@ -18,8 +18,8 @@ void WidgetFrequencyViewer::resizeEvent(QResizeEvent *event)
     m_imageBuffer.fill(color);
 }
 
-void WidgetFrequencyViewer::insertNewSpectrumRow(std::shared_ptr<std::vector<std::complex<double> > > FFTOutput, double ratio)
+void WidgetFrequencyViewer::insertNewSpectrumRow(FFTAnalysisResult FFTOutput)
 {
-    m_imageGenerator.insertNewSpectrumRow(FFTOutput, ratio);
+    m_imageGenerator.insertNewSpectrumRow(FFTOutput);
     update();
 }

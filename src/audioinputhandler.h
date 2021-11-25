@@ -14,7 +14,7 @@
 #include <vector>
 #include <memory>
 
-
+#include "common.hpp"
 
 class AudioInputHandler : public QObject
 {
@@ -36,7 +36,7 @@ private:
     unsigned long long m_FFTNeededSamples;
     unsigned long long m_FFTSamplesWritePoint = 0;
     std::vector<std::complex<double>> m_FFTSamples;
-    std::shared_ptr<std::vector<std::complex<double>>> m_FFTOutput;
+    FFTAnalysisResult m_FFTOutput;
 
     double m_highVal = 0;
     double m_lowVal = 0;
@@ -53,7 +53,7 @@ private slots:
 
 signals:
     void actualSampleRateEstimated(long actualSampleRate);
-    void fftOutputComputed(std::shared_ptr<std::vector<std::complex<double>>> fftOutput, double ratio);
+    void fftOutputComputed(FFTAnalysisResult fftOutput);
     void lowHighSampleValuesComputed(double lowInput, double highInput);
 
 public:
@@ -101,7 +101,8 @@ private:
             if (m_FFTSamplesWritePoint == m_FFTNeededSamples)
             {
                 computeFFT();
-                emit fftOutputComputed(m_FFTOutput, m_frequencyConversionRatio);
+                m_FFTOutput.frequencyConversionRatio = m_frequencyConversionRatio;
+                emit fftOutputComputed(m_FFTOutput);
                 m_FFTSamplesWritePoint = 0;
 
                 emit lowHighSampleValuesComputed(m_lowVal, m_highVal);
