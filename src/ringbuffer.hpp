@@ -2,7 +2,9 @@
 #define RINGBUFFER_H
 
 #include <vector>
+#include <cmath>
 
+#include <QDebug>
 
 template <typename T>
 class RingBuffer
@@ -20,7 +22,11 @@ public:
 
     unsigned long getBufSize() const { return m_bufSize; }
 
-    inline unsigned long getlenghtToRead() { return ((m_bufSize+m_writePoint)-m_readPoint)%m_bufSize; }
+    inline unsigned long getlenghtToRead(bool dbg=false) {
+        if(dbg)
+            qDebug() << m_bufSize << "    " << m_writePoint << "   " << m_readPoint;
+        return ((m_bufSize+m_writePoint)-m_readPoint)%m_bufSize;
+    }
 
     void moveReadPoint(unsigned long length)
     {
@@ -29,11 +35,16 @@ public:
         m_readPoint = (m_readPoint+length)%m_bufSize;
     }
 
-    T& operator[](unsigned long index)
+    T& operator[](long index)
     {
         if ( getlenghtToRead() < index ) // how much data is available to read
             throw "The index is beyond the available data.";
 
+        if (index < 0)
+        {
+            int n = std::floor(double(-index) / m_bufSize);
+            index += (n+1) * m_bufSize;
+        }
         unsigned long idx = (index + m_readPoint) % m_bufSize;
         return m_buffer[idx];
     }
