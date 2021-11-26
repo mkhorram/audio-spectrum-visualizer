@@ -1,3 +1,6 @@
 [submodule "external/dj_fft"]
 	path = external/dj_fft
 	url = https://github.com/jdupuy/dj_fft.git
+[submodule "external/Catch2"]
+	path = external/Catch2
+	url = https://github.com/catchorg/Catch2.git
