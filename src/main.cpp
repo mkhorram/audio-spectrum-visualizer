@@ -1,7 +1,9 @@
 #include "mainwindow.h"
 #include <QApplication>
 
+#define UNIT_TEST_ENABLED
 
+#ifndef UNIT_TEST_ENABLED
 
 void setSharedStyleSheet(QApplication &a)
 {
@@ -22,3 +24,7 @@ int main(int argc, char *argv[])
 
     return a.exec();
 }
+
+#else
+#include "tests.hpp"
+#endif
