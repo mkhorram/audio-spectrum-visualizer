@@ -36,7 +36,7 @@ private:
     unsigned int m_newBarThickness = 5;
 
 public:
-    explicit WidgetAmplitude(QWidget *parent = nullptr, unsigned long bufSize = 5000);
+    explicit WidgetAmplitude(QWidget *parent = nullptr, unsigned long bufSize = 500);
 
     void setLevelRagne(double rangeMinValue, double rangeMaxValue);
     void setBarThicknesses(unsigned int barThickness, unsigned int newBarThickness)

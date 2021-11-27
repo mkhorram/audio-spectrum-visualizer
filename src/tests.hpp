@@ -20,5 +20,19 @@ TEST_CASE( "RingBuffer bracketted access is tested", "[bracketted_access_to_Ring
             REQUIRE(rb[i] == i);
 }
 
+TEST_CASE( "RingBuffer getlenghtToRead() is tested", "[getlenghtToRead_of_RingBuffer]" ) {
+    RingBuffer<double> rb(5);
+    REQUIRE(rb.getlenghtToRead() == 0);
+    for (unsigned long i=0; i<100; ++i)
+    {
+        if (i < 5)
+            REQUIRE(rb.getlenghtToRead() == i);
+        else
+            REQUIRE(rb.getlenghtToRead() == 4);
+        double insVar = i;
+        rb.insert(insVar);
+    }
+}
+
 #endif // TESTS_HPP
 
