@@ -10,9 +10,9 @@ template <typename T>
 class RingBuffer
 {
 private:
-    unsigned long m_bufSize;
-    unsigned long m_readPoint {0};
-    unsigned long m_writePoint {0};
+    long long m_bufSize;
+    long long m_writePoint {0};
+    long long m_readableLength {0};
     std::vector<T> m_buffer;
 
 public:
@@ -20,41 +20,36 @@ public:
     RingBuffer& operator=(const RingBuffer&) = delete;
     RingBuffer(unsigned long bufSize) : m_bufSize(bufSize) { m_buffer.reserve(m_bufSize); }
 
-    unsigned long getBufSize() const { return m_bufSize; }
+    long getBufSize() const { return m_bufSize; }
 
-    inline unsigned long getlenghtToRead(bool dbg=false) {
-        if(dbg)
-            qDebug() << m_bufSize << "    " << m_writePoint << "   " << m_readPoint;
-        return ((m_bufSize+m_writePoint)-m_readPoint)%m_bufSize;
+    inline unsigned long getlenghtToRead() {
+        return m_readableLength;
     }
 
     void moveReadPoint(unsigned long length)
     {
-        if (getlenghtToRead() < length)
+        if (m_readableLength < length)
             throw "The length, to be removed, is beyond the available data.";
-        m_readPoint = (m_readPoint+length)%m_bufSize;
+        m_readableLength -= length;
+        if (m_readableLength < 0)
+            m_readableLength = 0;
     }
 
     T& operator[](long index)
     {
-        if ( getlenghtToRead() < index ) // how much data is available to read
+        if (index > m_readableLength || index < 0) // how much data is available to read
             throw "The index is beyond the available data.";
+        unsigned long idx = (index + m_writePoint - m_readableLength + m_bufSize) % m_bufSize;
 
-        if (index < 0)
-        {
-            int n = std::floor(double(-index) / m_bufSize);
-            index += (n+1) * m_bufSize;
-        }
-        unsigned long idx = (index + m_readPoint) % m_bufSize;
         return m_buffer[idx];
     }
 
     void insert(T& copyableVar)
     {
-        if (m_bufSize - getlenghtToRead() == 1)
-            ++m_readPoint;
         m_buffer[m_writePoint] = copyableVar;
-        m_writePoint = (m_writePoint+1) % m_bufSize;
+        m_writePoint = (++m_writePoint) % m_bufSize;
+        if (m_readableLength < m_bufSize)
+            m_readableLength++;
     }
 
     void insert(std::vector<T> copyableVarVector)
@@ -68,9 +63,10 @@ public:
         for (int i = 0; i < length; ++i)
             varVector.push_back(this[fromIndex+i]);
     }
+
     void reset()
     {
-        m_readPoint = 0;
+        m_readableLength = 0;
         m_writePoint = 0;
     }
 };
