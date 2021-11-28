@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include <QApplication>
 
-#define UNIT_TEST_ENABLED
+//#define UNIT_TEST_ENABLED
 
 #ifndef UNIT_TEST_ENABLED
 

@@ -23,7 +23,7 @@ void WidgetAmplitude::insertLevelBar(double lowInput, double highInput)
 
 void WidgetAmplitude::paintEvent(QPaintEvent *event)
 {
-    unsigned long readableLength = m_amplitudesBuffer.getlenghtToRead(true);
+    unsigned long readableLength = m_amplitudesBuffer.getlenghtToRead();
     if (readableLength == 0)
         return;
 
@@ -44,10 +44,6 @@ void WidgetAmplitude::paintEvent(QPaintEvent *event)
     int barLeft = drawLeftEdge + (m_amplitudesBuffer[newestIndex].lowInput - m_rangeMinValue) / (m_rangeMaxValue-m_rangeMinValue) * drawWidth;
     int barWidth = (m_amplitudesBuffer[newestIndex].highInput - m_amplitudesBuffer[newestIndex].lowInput) / (m_rangeMaxValue-m_rangeMinValue) * drawWidth;
     painter.fillRect(barLeft, barTop, barWidth, m_newBarThickness, QColor(255,190,190));
-
-    static long n = 0;
-    qDebug() << n << " ** " << readableLength << " ** " << newestIndex;
-    n++;
 
     unsigned long barIndex = newestIndex;
     while (barIndex > 0)
