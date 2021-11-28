@@ -19,9 +19,12 @@ private:
     QImage m_spectrumImage;
     int m_imageTop;
     int m_imageHeight;
+    int m_rowHeight;
+    int m_firstRowHeight;
     int m_imageWriteTop;
 
 private:
+    void createImage(int imageWidth, int imageHeight);
 
 public:
     SpectrumImageGenerator();
