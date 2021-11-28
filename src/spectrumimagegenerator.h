@@ -16,12 +16,20 @@ class SpectrumImageGenerator
 
 private:
     RingBuffer<FFTAnalysisResult> m_buffer;
+    QImage m_spectrumImage;
+    int m_imageTop;
+    int m_imageHeight;
+    int m_imageWriteTop;
+
+private:
+
 public:
     SpectrumImageGenerator();
     void insertNewSpectrumRow(FFTAnalysisResult FFTOutput);
-    void runGenerator(unsigned int imageWidth, unsigned int imageRows, unsigned int rowHeight, unsigned int firstRowHeight);
+    void runGenerator(int imageWidth, int imageHeight, int rowHeight, int firstRowHeight);
     void stopGenerator();
-    void resizeImage(unsigned int imageWidth, unsigned int imageRows, unsigned int rowHeight, unsigned int firstRowHeight);
+    void setImageSize(int imageWidth, int imageHeight, int rowHeight, int firstRowHeight);
+    QImage getImage();
 };
 
 #endif // SPECTRUMIMAGEGENERATOR_H
