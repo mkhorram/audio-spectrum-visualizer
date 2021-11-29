@@ -1,6 +1,6 @@
 #include "spectrumimagegenerator.h"
 
-SpectrumImageGenerator::SpectrumImageGenerator() : m_buffer(5000)
+SpectrumImageGenerator::SpectrumImageGenerator() : m_buffer(5000), m_isRunning(false)
 { }
 
 void SpectrumImageGenerator::createImage(int imageWidth, int imageHeight)
@@ -11,6 +11,7 @@ void SpectrumImageGenerator::createImage(int imageWidth, int imageHeight)
             m_spectrumImage.setPixelColor(x, y, QColor(x%256, y%256, (x+x*y+y)%256));
 }
 
+
 void SpectrumImageGenerator::insertNewSpectrumRow(FFTAnalysisResult FFTOutput)
 {
     m_buffer.insert(FFTOutput);
@@ -20,18 +21,22 @@ void SpectrumImageGenerator::insertNewSpectrumRow(FFTAnalysisResult FFTOutput)
 void SpectrumImageGenerator::runGenerator(int imageWidth, int imageHeight, int rowHeight, int firstRowHeight)
 {
     createImage(imageWidth, imageHeight);
-    // start
 
     m_imageTop = 0;
     m_imageHeight = imageHeight;
     m_rowHeight = rowHeight;
     m_firstRowHeight = firstRowHeight;
     m_imageWriteTop = m_imageHeight;
+
+    m_isRunning = true;
+    m_loopThread = std::thread(jobLoop, this);
 }
 
 void SpectrumImageGenerator::stopGenerator()
 {
-    // stop
+    m_isRunning = false;
+    if (m_loopThread.joinable())
+        m_loopThread.join();
 }
 
 void SpectrumImageGenerator::setImageSize(int imageWidth, int imageHeight, int rowHeight, int firstRowHeight)
@@ -39,7 +44,7 @@ void SpectrumImageGenerator::setImageSize(int imageWidth, int imageHeight, int r
     createImage(imageWidth, imageHeight);
 }
 
-QImage SpectrumImageGenerator::getImage(int &top, int &height)
+QImage &SpectrumImageGenerator::getImage(int &top, int &height)
 {
     top = m_imageTop;
     height = m_imageHeight;
