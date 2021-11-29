@@ -4,6 +4,7 @@
 #include <QImage>
 
 #include <complex>
+#include <chrono>
 #include <memory>
 #include <thread>
 #include <vector>
@@ -25,17 +26,8 @@ private:
     int m_imageWriteTop;
 
     bool m_isRunning;
+    int m_rowsToBeDrawn;
     std::thread m_loopThread;
-
-private:
-    void createImage(int imageWidth, int imageHeight);
-    static void jobLoop(SpectrumImageGenerator *imgGenerator)
-    {
-        while (imgGenerator->m_isRunning)
-        {
-            //
-        }
-    }
 
 public:
     SpectrumImageGenerator();
@@ -44,6 +36,15 @@ public:
     void stopGenerator();
     void setImageSize(int imageWidth, int imageHeight, int rowHeight, int firstRowHeight);
     QImage &getImage(int &top, int &height);
+
+private:
+    void createImage(int imageWidth, int imageHeight);
+    void jobLoop();
+
+    static void jobLoopCaller(SpectrumImageGenerator *imgGenerator)
+    {
+        imgGenerator->jobLoop();
+    }
 };
 
 #endif // SPECTRUMIMAGEGENERATOR_H
