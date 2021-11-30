@@ -6,7 +6,11 @@ SpectrumImageGenerator::SpectrumImageGenerator() :
 
 void SpectrumImageGenerator::createImage(int imageWidth, int imageHeight)
 {
-    m_spectrumImage = QImage(imageWidth, imageHeight, QImage::Format_RGB32);
+    m_imageWidth = imageWidth;
+    m_imageHeight = imageHeight;
+    m_spectrumImage = QImage(imageWidth,
+                             (2*imageHeight)+(m_firstRowHeight+m_rowHeight),
+                             QImage::Format_RGB32);
     for (int x=0; x<imageWidth; x++)
         for (int y=0; y<imageHeight; y++)
             m_spectrumImage.setPixelColor(x, y, QColor(x%256, y%256, (x+x*y+y)%256));
@@ -16,12 +20,15 @@ void SpectrumImageGenerator::jobLoop()
 {
     while (m_isRunning)
     {
-        // lock guard
-        for ( ; m_rowsToBeDrawn > 0; m_rowsToBeDrawn--)
+        if (m_rowsToBeDrawn > 0)
         {
-            // draw new rows
+            std::lock_guard<std::mutex> guardBuffer(m_mutexBuffer);
+            std::lock_guard<std::mutex> guardImage(m_mutexImage);
+            for ( ; m_rowsToBeDrawn > 0; m_rowsToBeDrawn--)
+            {
+                // draw new rows
+            }
         }
-        // unlock
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
@@ -29,19 +36,20 @@ void SpectrumImageGenerator::jobLoop()
 
 void SpectrumImageGenerator::insertNewSpectrumRow(FFTAnalysisResult FFTOutput)
 {
+    std::lock_guard<std::mutex> guardBuffer(m_mutexBuffer);
     m_buffer.insert(FFTOutput);
     // update image
 }
 
 void SpectrumImageGenerator::runGenerator(int imageWidth, int imageHeight, int rowHeight, int firstRowHeight)
 {
-    createImage(imageWidth, imageHeight);
-
     m_imageTop = 0;
     m_imageHeight = imageHeight;
     m_rowHeight = rowHeight;
     m_firstRowHeight = firstRowHeight;
     m_imageWriteTop = m_imageHeight;
+
+    createImage(imageWidth, imageHeight);
 
     m_isRunning = true;
     std::thread thr(jobLoopCaller, this);
@@ -62,6 +70,7 @@ void SpectrumImageGenerator::setImageSize(int imageWidth, int imageHeight, int r
 
 QImage &SpectrumImageGenerator::getImage(int &top, int &height)
 {
+    std::lock_guard<std::mutex> guardImage(m_mutexImage);
     top = m_imageTop;
     height = m_imageHeight;
     return m_spectrumImage;
