@@ -160,6 +160,8 @@ void MainWindow::on_tbStart_clicked()
             else if (sampleType == QAudioFormat::SignedInt)
                 m_wgtAmplitude->setLevelRagne(-1, 1);
         }
+
+        FFTAmplitudeToPixelMixingType mf2p = m_dlgSettings.getFrequencyAmplitudeMixingType();
     }
 }
 

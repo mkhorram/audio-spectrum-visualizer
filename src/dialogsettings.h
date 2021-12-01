@@ -7,6 +7,8 @@
 #include <QtMultimedia/QAudioDeviceInfo>
 #include <QtMultimedia/QAudioFormat>
 
+#include "common.hpp"
+
 namespace Ui {
 class DialogSettings;
 }
@@ -25,6 +27,7 @@ public:
     long getFrequencyMeasuringNeededSamples();
     int getRowPixelHeightPerProcess();
     int getNewRowPixelHeightPerProcess();
+    FFTAmplitudeToPixelMixingType getFrequencyAmplitudeMixingType();
 
 signals:
     void DialogSettingsClosed(QCloseEvent *event);

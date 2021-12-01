@@ -14,9 +14,12 @@ class WidgetFrequencyViewer : public QWidget
 private:
     QImage m_imageBuffer;
     SpectrumImageGenerator m_imageGenerator;
+    FFTAmplitudeToPixelMixingType m_mixingType;
 
 public:
     explicit WidgetFrequencyViewer(QWidget *parent = nullptr);
+    void setAmplitudeMixingType(FFTAmplitudeToPixelMixingType mixingType)
+    { m_mixingType = mixingType; }
 
 protected:
     void paintEvent(QPaintEvent *event) override;

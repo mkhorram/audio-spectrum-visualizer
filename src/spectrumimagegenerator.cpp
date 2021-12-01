@@ -7,7 +7,7 @@ SpectrumImageGenerator::SpectrumImageGenerator() :
 void SpectrumImageGenerator::createWholeImage(int imageWidth, int imageHeight)
 {
     m_wholeImageWidth = imageWidth;
-    m_wholeImageHeight = (2*imageHeight)+(m_firstRowHeight+m_rowHeight);
+    m_wholeImageHeight = (3*imageHeight)+(m_firstRowHeight+m_rowHeight);
     m_wholeImage = QImage(m_wholeImageWidth, m_wholeImageHeight, QImage::Format_RGB32);
     // TODO: remove after the jobLoop completed
     for (int x=0; x<imageWidth; x++)
@@ -23,6 +23,8 @@ void SpectrumImageGenerator::jobLoop()
         {
             std::lock_guard<std::mutex> guardBuffer(m_mutexBuffer);
             std::lock_guard<std::mutex> guardImage(m_mutexImage);
+            int readableBuffer = m_buffer.getlenghtToRead();
+            if (readableBuffer)
             for ( ; m_rowsToBeDrawn > 0; m_rowsToBeDrawn--)
             {
                 // pick the row and buffer field
@@ -69,9 +71,10 @@ void SpectrumImageGenerator::setImageSize(int imageWidth, int imageHeight)
     createWholeImage(imageWidth, imageHeight);
     m_subAreaTop = 0;
     m_subAreaHeight = imageHeight;
-    // redraw the subArea
+    // TODO: redraw the subArea
 }
 
+// TODO: replace with direct draw on the QWidget
 QImage &SpectrumImageGenerator::getImage(int &top, int &left, int &height, int &width)
 {
     std::lock_guard<std::mutex> guardImage(m_mutexImage);

@@ -10,4 +10,11 @@ struct FFTAnalysisResult{
     double frequencyConversionRatio;    // frequency = *rowBuffer[i].real * frequencyConversionRatio
 };
 
+enum class FFTAmplitudeToPixelMixingType
+{
+    Average,
+    SquareAverage,
+    MaximumValue
+};
+
 #endif // COMMON_H
