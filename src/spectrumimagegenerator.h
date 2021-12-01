@@ -19,6 +19,7 @@ class SpectrumImageGenerator
 
 private:
     RingBuffer<FFTAnalysisResult> m_buffer;
+    FFTAmplitudeToPixelMixingType m_mixingType;
 
     int m_rowHeight;
     int m_firstRowHeight;
@@ -42,6 +43,10 @@ private:
 
 public:
     SpectrumImageGenerator();
+
+    void setAmplitudeMixingType(FFTAmplitudeToPixelMixingType mixingType)
+    { m_mixingType = mixingType; }
+
     void insertNewSpectrumRow(FFTAnalysisResult FFTOutput);
     void runGenerator(int imageWidth, int imageHeight, int rowHeight, int firstRowHeight);
     void stopGenerator();
