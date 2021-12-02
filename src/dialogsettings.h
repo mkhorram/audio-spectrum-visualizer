@@ -16,6 +16,14 @@ class DialogSettings;
 class DialogSettings : public QDialog
 {
     Q_OBJECT
+private:
+    Ui::DialogSettings *ui;
+
+    int m_deviceIndex;
+    QAudioDeviceInfo m_deviceInfo;
+    QAudioFormat m_globalFormatSettings;
+
+    std::vector<FFTAmplitudeToPixelMixingType> m_mixingTypes;
 
 public:
     explicit DialogSettings(QWidget *parent = nullptr);
@@ -44,13 +52,6 @@ private slots:
     void on_btnRefresh_clicked();
     void on_btnCancel_clicked();
     void on_btnOK_clicked();
-
-private:
-    Ui::DialogSettings *ui;
-
-    int m_deviceIndex;
-    QAudioDeviceInfo m_deviceInfo;
-    QAudioFormat m_globalFormatSettings;
 };
 
 #endif // DIALOGSETTINGS_H

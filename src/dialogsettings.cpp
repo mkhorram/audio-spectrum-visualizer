@@ -6,9 +6,12 @@ DialogSettings::DialogSettings(QWidget *parent) :
     ui(new Ui::DialogSettings)
 {
     ui->setupUi(this);
-    ui->cboFrequencyAmplitudeMixing->addItem("Averaging", qVariantFromValue(FFTAmplitudeToPixelMixingType::Average));
-    ui->cboFrequencyAmplitudeMixing->addItem("Square Average", qVariantFromValue(FFTAmplitudeToPixelMixingType::SquareAverage));
-    ui->cboFrequencyAmplitudeMixing->addItem("Maximum Value", qVariantFromValue(FFTAmplitudeToPixelMixingType::MaximumValue));
+    m_mixingTypes.push_back(FFTAmplitudeToPixelMixingType::Average);
+    ui->cboFrequencyAmplitudeMixing->addItem("Average");
+    m_mixingTypes.push_back(FFTAmplitudeToPixelMixingType::SquareAverage);
+    ui->cboFrequencyAmplitudeMixing->addItem("Square Average");
+    m_mixingTypes.push_back(FFTAmplitudeToPixelMixingType::MaximumValue);
+    ui->cboFrequencyAmplitudeMixing->addItem("Maximum Value");
     ui->cboFrequencyAmplitudeMixing->setCurrentIndex(1);
     ui->cboChannel->setVisible(false);
     ui->lblChannel->setVisible(false);
@@ -55,7 +58,8 @@ int DialogSettings::getNewRowPixelHeightPerProcess()
 
 FFTAmplitudeToPixelMixingType DialogSettings::getFrequencyAmplitudeMixingType()
 {
-    return ui->cboFrequencyAmplitudeMixing->currentData().value<FFTAmplitudeToPixelMixingType>();
+    int index = ui->cboFrequencyAmplitudeMixing->currentIndex();
+    return m_mixingTypes[index];
 }
 
 
