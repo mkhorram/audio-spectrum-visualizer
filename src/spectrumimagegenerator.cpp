@@ -4,21 +4,22 @@ SpectrumImageGenerator::SpectrumImageGenerator() :
     m_buffer(5000), m_imageUpdated(false), m_isRunning(false), m_rowsToBeDrawn(0)
 { }
 #include <QPainter>
+#include <QPixmap>
 void SpectrumImageGenerator::createWholeImage(int imageWidth, int imageHeight)
 {
     m_wholeImageWidth = imageWidth;
     m_wholeImageHeight = (3*imageHeight)+(m_firstRowHeight+m_rowHeight);
-    m_wholeImage = QImage(QSize(m_wholeImageWidth, m_wholeImageHeight), QImage::Format_ARGB32);
+    m_wholeImage = QPixmap(m_wholeImageWidth, m_wholeImageHeight);
     m_wholeImage.fill(Qt::blue);
     QPainter painter(&m_wholeImage);
 
     // TODO: remove after the jobLoop completed
-    for (int x=0; x<imageWidth; x++)
-        for (int y=0; y<imageHeight; y++)
-        {
-            painter.setPen(QColor(x%256, y%256, (x+x*y+y)%256));
-            painter.drawPoint(x, y);
-        }
+    //for (int x=0; x<imageWidth; x++)
+    //    for (int y=0; y<imageHeight; y++)
+    //    {
+    //        painter.setPen(QColor(x%256, y%256, (x+x*y+y)%256));
+    //        painter.drawPoint(x, y);
+    //    }
 }
 
 void SpectrumImageGenerator::jobLoop()
@@ -84,7 +85,7 @@ void SpectrumImageGenerator::setImageSize(int imageWidth, int imageHeight)
 }
 
 // TODO: Should be replaced with direct draw on the QWidget?
-QImage &SpectrumImageGenerator::getImage(int &imgTop, int &imgLeft, int &imgHeight, int &imgWidth)
+QImage SpectrumImageGenerator::getImage(int &imgTop, int &imgLeft, int &imgHeight, int &imgWidth)
 {
     std::lock_guard<std::mutex> guardImage(m_mutexImage);
     imgTop = m_subAreaTop;
@@ -92,5 +93,5 @@ QImage &SpectrumImageGenerator::getImage(int &imgTop, int &imgLeft, int &imgHeig
     imgHeight = m_subAreaHeight;
     imgWidth = m_subAreaWidth;
     m_imageUpdated = false;
-    return m_wholeImage;
+    return m_wholeImage.toImage().convertToFormat(QImage::Format_ARGB32);
 }

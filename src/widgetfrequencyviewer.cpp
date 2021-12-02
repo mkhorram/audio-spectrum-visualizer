@@ -9,7 +9,7 @@ void WidgetFrequencyViewer::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     int imgTop, imgLeft, imgHeight, imgWidth;
-    QImage &img = m_imageGenerator.getImage(imgTop, imgLeft, imgHeight, imgWidth);
+    QImage img = m_imageGenerator.getImage(imgTop, imgLeft, imgHeight, imgWidth);
     painter.drawImage(QPoint(0,0), img, QRect(imgLeft, imgTop, imgWidth, imgHeight));
 }
 

@@ -2,6 +2,7 @@
 #define SPECTRUMIMAGEGENERATOR_H
 
 #include <QImage>
+#include <QPixmap>
 
 #include <complex>
 #include <chrono>
@@ -25,7 +26,7 @@ private:
     int m_rowHeight;
     int m_firstRowHeight;
 
-    QImage m_wholeImage;
+    QPixmap m_wholeImage;
     int m_wholeImageWidth;
     int m_wholeImageHeight;
 
@@ -52,7 +53,7 @@ public:
     void runGenerator(int imageWidth, int imageHeight, int rowHeight, int firstRowHeight);
     void stopGenerator();
     void setImageSize(int imageWidth, int imageHeight);
-    QImage &getImage(int &imgTop, int &imgLeft, int &imgHeight, int &imgWidth);
+    QImage getImage(int &imgTop, int &imgLeft, int &imgHeight, int &imgWidth);
 
 private:
     void createWholeImage(int imageWidth, int imageHeight);
