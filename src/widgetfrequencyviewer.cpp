@@ -2,20 +2,22 @@
 
 WidgetFrequencyViewer::WidgetFrequencyViewer(QWidget *parent) : QWidget(parent)
 {
-    m_imageBuffer = QImage(this->width(), this->height(), QImage::Format_RGB32);
+    m_imageGenerator.setImageSize(this->width(), this->height());
 }
 
 void WidgetFrequencyViewer::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
-    painter.drawImage(QPoint(0,0), m_imageBuffer);
+    int imgTop, imgLeft, imgHeight, imgWidth;
+    QImage &img = m_imageGenerator.getImage(imgTop, imgLeft, imgHeight, imgWidth);
+    painter.drawImage(QPoint(0,0), img, QRect(imgLeft, imgTop, imgWidth, imgHeight));
 }
 
 void WidgetFrequencyViewer::resizeEvent(QResizeEvent *event)
 {
-    m_imageBuffer = QImage(event->size().width(), event->size().height(), QImage::Format_RGB32);
-    QColor color((event->size().width()*5)%256, event->size().height()%256, (event->size().width()+event->size().height())%255);
-    m_imageBuffer.fill(color);
+    m_imageGenerator.setImageSize(event->size().width(), event->size().height());
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    this->update();
 }
 
 void WidgetFrequencyViewer::insertNewSpectrumRow(FFTAnalysisResult FFTOutput)
