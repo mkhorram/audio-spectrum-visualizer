@@ -20,6 +20,7 @@ class SpectrumImageGenerator
 private:
     RingBuffer<FFTAnalysisResult> m_buffer;
     FFTAmplitudeToPixelMixingType m_mixingType;
+    bool m_imageUpdated;
 
     int m_rowHeight;
     int m_firstRowHeight;
@@ -51,7 +52,7 @@ public:
     void runGenerator(int imageWidth, int imageHeight, int rowHeight, int firstRowHeight);
     void stopGenerator();
     void setImageSize(int imageWidth, int imageHeight);
-    QImage &getImage(int &top, int &left, int &height, int &width);
+    QImage &getImage(int &imgTop, int &imgLeft, int &imgHeight, int &imgWidth);
 
 private:
     void createWholeImage(int imageWidth, int imageHeight);
