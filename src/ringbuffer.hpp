@@ -18,7 +18,7 @@ private:
 public:
     RingBuffer(const RingBuffer&) = delete;
     RingBuffer& operator=(const RingBuffer&) = delete;
-    RingBuffer(unsigned long bufSize) : m_bufSize(bufSize) { m_buffer.reserve(m_bufSize); }
+    RingBuffer(unsigned long bufSize) : m_bufSize(bufSize) { m_buffer.resize(m_bufSize); }
 
     long getBufSize() const { return m_bufSize; }
 
