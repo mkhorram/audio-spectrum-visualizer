@@ -103,9 +103,9 @@ void MainWindow::updateFormatInStatusbar()
         sampleType = "Unknown";
 
     ui->lblConfiguredAudioFormat->setText(
-                "Sample Rate: " + QString::number(format.sampleRate()) + " Hz | "
-                "Sample Size: " + QString::number(format.sampleSize()) + " bit | "
-                "Sample Type: " + sampleType + " | "
+                "Sample Rate: " + QString::number(format.sampleRate()) + " Hz  |  "
+                "Sample Size: " + QString::number(format.sampleSize()) + " bit  |  "
+                "Sample Type: " + sampleType + "  |  "
                 "Byte Order: " + sampleByteOrder
                 );
 }
@@ -162,12 +162,15 @@ void MainWindow::on_tbStart_clicked()
         }
 
         FFTAmplitudeToPixelMixingType mf2p = m_dlgSettings.getFrequencyAmplitudeMixingType();
+        m_wgtFrequencyViewer->start(m_dlgSettings.getRowPixelHeightPerProcess(),
+                                    m_dlgSettings.getNewRowPixelHeightPerProcess());
     }
 }
 
 void MainWindow::on_tbStop_clicked()
 {
     m_audioHandler.stop();
+    m_wgtFrequencyViewer->stop();
     ChangeWorkingState(WorkState::Stopped);
 }
 

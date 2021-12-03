@@ -20,6 +20,8 @@ class SpectrumImageGenerator
 private:
     RingBuffer<FFTAnalysisResult> m_buffer;
     FFTAmplitudeToPixelMixingType m_mixingType;
+    std::vector<FFTRangeToPixelMap> m_FFTtoPixelConversionRanges;
+
     bool m_imageUpdated = false;
 
     int m_rowHeight = 2;
@@ -47,15 +49,21 @@ public:
 
     void setAmplitudeMixingType(FFTAmplitudeToPixelMixingType mixingType)
     { m_mixingType = mixingType; }
+    void setFFTRanges(std::vector<FFTRangeToPixelMap> &FFTtoPixelConversionRanges)
+    {
+        std::lock_guard<std::mutex> guardImage(m_mutexImage);
+        m_FFTtoPixelConversionRanges = FFTtoPixelConversionRanges;
+    }
 
     void insertNewSpectrumRow(FFTAnalysisResult FFTOutput);
-    void runGenerator(int imageWidth, int imageHeight, int rowHeight, int firstRowHeight);
+    void startGenerator(int imageWidth, int imageHeight, int rowHeight, int firstRowHeight);
     void stopGenerator();
     void setImageSize(int imageWidth, int imageHeight);
     QImage &getImage(int &imgLeft, int &imgTop, int &imgWidth, int &imgHeight);
 
 private:
     void createWholeImage(int imageWidth, int imageHeight);
+    std::vector<QColor> generateRowColors(const FFTAnalysisResult &bufferRow);
     void jobLoop();
 
     static void jobLoopCaller(SpectrumImageGenerator *imgGenerator)

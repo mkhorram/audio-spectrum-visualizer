@@ -23,4 +23,11 @@ enum class FFTAmplitudeToPixelMixingType
     MaximumValue
 };
 
+struct FFTRangeToPixelMap
+{
+    int pixCol = 0;
+    long subFFTRangeStart = 0;
+    long subFFTRangeLength = 0;
+};
+
 #endif // COMMON_H

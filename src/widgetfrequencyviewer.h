@@ -19,6 +19,10 @@ public:
     explicit WidgetFrequencyViewer(QWidget *parent = nullptr);
     void setAmplitudeMixingType(FFTAmplitudeToPixelMixingType mixingType)
     { m_mixingType = mixingType;    m_imageGenerator.setAmplitudeMixingType(mixingType); }
+    void start(int rowHeight, int firstRowHeight)
+    { m_imageGenerator.startGenerator(this->width(), this->height(), rowHeight, firstRowHeight); }
+    void stop()
+    { m_imageGenerator.stopGenerator(); }
 
 protected:
     void paintEvent(QPaintEvent *event) override;

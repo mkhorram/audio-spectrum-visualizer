@@ -3,8 +3,7 @@
 SpectrumImageGenerator::SpectrumImageGenerator() :
     m_buffer(5000), m_rowsToBeDrawn(0)
 { }
-#include <QPainter>
-#include <QPixmap>
+#include <QDebug>
 void SpectrumImageGenerator::createWholeImage(int imageWidth, int imageHeight)
 {
     m_wholeImageWidth = imageWidth;
@@ -26,16 +25,19 @@ void SpectrumImageGenerator::jobLoop()
             std::lock_guard<std::mutex> guardBuffer(m_mutexBuffer);
             std::lock_guard<std::mutex> guardImage(m_mutexImage);
             int readableBuffer = m_buffer.getlenghtToRead();
-            if (readableBuffer)
-            for ( ; m_rowsToBeDrawn > 0; m_rowsToBeDrawn--)
+            int workCounter = std::min(readableBuffer, m_rowsToBeDrawn);
+            qDebug() << readableBuffer << "   " << m_rowsToBeDrawn << "   " << workCounter;
+            for ( int i = workCounter; i > 0; --i)
             {
                 // pick the row and buffer field
+                FFTAnalysisResult bufferRow = m_buffer[readableBuffer - i];
                 {
                     // find the range of frequencies for every pixel
                     // detect the highest value in the range
                     // set the pixel color from formulae
                 }
             }
+            m_rowsToBeDrawn = 0;
             m_imageUpdated = true;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -47,9 +49,11 @@ void SpectrumImageGenerator::insertNewSpectrumRow(FFTAnalysisResult FFTOutput)
 {
     std::lock_guard<std::mutex> guardBuffer(m_mutexBuffer);
     m_buffer.insert(FFTOutput);
+    m_rowsToBeDrawn++;
+    qDebug() << m_buffer.getlenghtToRead();
 }
 
-void SpectrumImageGenerator::runGenerator(int imageWidth, int imageHeight, int rowHeight, int firstRowHeight)
+void SpectrumImageGenerator::startGenerator(int imageWidth, int imageHeight, int rowHeight, int firstRowHeight)
 {
     m_rowHeight = rowHeight;
     m_firstRowHeight = firstRowHeight;
