@@ -6,8 +6,8 @@
 #include <vector>
 
 struct FFTAnalysisResult{
-    std::shared_ptr<std::vector<std::complex<double>>> rowBuffer;
-    double frequencyConversionRatio;    // frequency = *rowBuffer[i].real * frequencyConversionRatio
+    std::shared_ptr<std::vector<std::complex<double>>> rowBuffer; // freq Amplitude = *rowBuffer[i].real?
+    double frequencyConversionRatio;    // freq = i * frequencyConversionRatio
     FFTAnalysisResult& operator=(const FFTAnalysisResult& source)
     {
         rowBuffer = source.rowBuffer;
@@ -26,6 +26,7 @@ enum class FFTAmplitudeToPixelMixingType
 struct FFTRangeToPixelMap
 {
     int pixCol = 0;
+    int pixelCount = 0;
     long subFFTRangeStart = 0;
     long subFFTRangeLength = 0;
 };

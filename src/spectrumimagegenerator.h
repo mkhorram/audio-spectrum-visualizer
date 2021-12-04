@@ -3,15 +3,16 @@
 
 #include <QImage>
 
-#include <complex>
 #include <chrono>
+#include <cmath>
+#include <complex>
 #include <memory>
 #include <mutex>
 #include <thread>
 #include <vector>
 
-#include "ringbuffer.hpp"
 #include "common.hpp"
+#include "ringbuffer.hpp"
 
 
 class SpectrumImageGenerator
@@ -63,7 +64,7 @@ public:
 
 private:
     void createWholeImage(int imageWidth, int imageHeight);
-    std::vector<QColor> generateRowColors(const FFTAnalysisResult &bufferRow);
+    inline std::vector<QColor> generateRowColors(FFTAnalysisResult &bufferRow);
     void jobLoop();
 
     static void jobLoopCaller(SpectrumImageGenerator *imgGenerator)

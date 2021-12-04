@@ -16,6 +16,45 @@ void SpectrumImageGenerator::createWholeImage(int imageWidth, int imageHeight)
             m_wholeImage.setPixelColor(x, y, QColor(((x*y+100)/15)%256, ((x*y)/15)%256, ((m_wholeImageWidth*x*y)/(x+50))%256));
 }
 
+std::vector<QColor> SpectrumImageGenerator::generateRowColors(FFTAnalysisResult &bufferRow)
+{
+    std::vector<QColor> colors;
+    for (FFTRangeToPixelMap rangeToPixel : m_FFTtoPixelConversionRanges)
+    {
+        int n2 = std::min((rangeToPixel.subFFTRangeStart + 1) + rangeToPixel.subFFTRangeLength,
+                          long(bufferRow.rowBuffer->size()));
+        double targetValue = 0;
+        std::vector<std::complex<double>> &rowBuffer = *bufferRow.rowBuffer;
+        if (m_mixingType == FFTAmplitudeToPixelMixingType::Average)
+        {
+            for (int i=rangeToPixel.subFFTRangeStart; i<n2; ++i)
+                targetValue += std::abs(rowBuffer[i].real());
+            if (targetValue > 0)
+                targetValue /= (n2 - rangeToPixel.subFFTRangeStart);
+        }
+        else if (m_mixingType == FFTAmplitudeToPixelMixingType::MaximumValue)
+        {
+            for (int i=rangeToPixel.subFFTRangeStart; i<n2; ++i)
+                targetValue = std::max(std::abs(rowBuffer[i].real()), targetValue);
+        }
+        else if (m_mixingType == FFTAmplitudeToPixelMixingType::SquareAverage)
+        {
+            for (int i=rangeToPixel.subFFTRangeStart; i<n2; ++i)
+                targetValue += rowBuffer[i].real() * rowBuffer[i].real();
+            if (targetValue > 0)
+                targetValue = std::sqrt(targetValue / (n2 - rangeToPixel.subFFTRangeStart));
+        }
+        // TODO: find appropiate formulae
+        int r = targetValue;
+        int g = targetValue;
+        int b = targetValue;
+        QColor pixColor(r,g,b);
+        for (int j=0; j<rangeToPixel.pixelCount; ++j)
+            colors.push_back(pixColor);
+    }
+    return colors;
+}
+
 void SpectrumImageGenerator::jobLoop()
 {
     while (m_isRunning)
