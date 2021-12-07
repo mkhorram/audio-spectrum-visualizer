@@ -4,7 +4,6 @@
 #include <vector>
 #include <cmath>
 
-#include <QDebug>
 
 template <typename T>
 class RingBuffer

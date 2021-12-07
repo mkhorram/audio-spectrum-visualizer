@@ -1,6 +1,5 @@
 #include "widgetamplitude.h"
 
-#include <QDebug>
 
 WidgetAmplitude::WidgetAmplitude(QWidget *parent, unsigned long bufSize) : QWidget(parent), m_amplitudesBuffer(bufSize)
 {

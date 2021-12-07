@@ -1,9 +1,11 @@
 #include "spectrumimagegenerator.h"
 
+#include <QDebug>
+
 SpectrumImageGenerator::SpectrumImageGenerator() :
     m_buffer(5000), m_rowsToBeDrawn(0)
 { }
-#include <QDebug>
+
 void SpectrumImageGenerator::createWholeImage(int imageWidth, int imageHeight)
 {
     m_wholeImageWidth = imageWidth;
@@ -65,7 +67,6 @@ void SpectrumImageGenerator::jobLoop()
             std::lock_guard<std::mutex> guardImage(m_mutexImage);
             int readableBuffer = m_buffer.getlenghtToRead();
             int workCounter = std::min(readableBuffer, m_rowsToBeDrawn);
-            qDebug() << readableBuffer << "   " << m_rowsToBeDrawn << "   " << workCounter;
             for ( int i = workCounter; i > 0; --i)
             {
                 // pick the row and buffer field
@@ -89,7 +90,6 @@ void SpectrumImageGenerator::insertNewSpectrumRow(FFTAnalysisResult FFTOutput)
     std::lock_guard<std::mutex> guardBuffer(m_mutexBuffer);
     m_buffer.insert(FFTOutput);
     m_rowsToBeDrawn++;
-    qDebug() << m_buffer.getlenghtToRead();
 }
 
 void SpectrumImageGenerator::startGenerator(int imageWidth, int imageHeight, int rowHeight, int firstRowHeight)
