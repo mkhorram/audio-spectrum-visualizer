@@ -21,6 +21,7 @@ bool AudioInputHandler::start(QAudioFormat format, QAudioDeviceInfo audioDeviceI
 {
     Q_ASSERT(format.sampleSize() % 8 == 0);
 
+    m_format = format;
     m_frequencyConversionRatio = double(m_format.sampleRate()) / FFTNeededSamples;
 
     m_FFTNeededSamples = FFTNeededSamples;
@@ -29,7 +30,6 @@ bool AudioInputHandler::start(QAudioFormat format, QAudioDeviceInfo audioDeviceI
     m_frequencyNeededSamples = frequencyNeededSamples;
     m_frequencySampleCount = 0;
 
-    m_format = format;
     m_audioDeviceInfo = audioDeviceInfo;
     if (m_audioDeviceInfo.isNull() || !m_format.isValid())
         return false;

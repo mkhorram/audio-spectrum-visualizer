@@ -106,8 +106,7 @@ private:
                 m_FFTSamplesWritePoint = 0;
 
                 emit lowHighSampleValuesComputed(m_lowVal, m_highVal);
-                m_highVal = 0;
-                m_lowVal = 0;
+                m_highVal = m_lowVal = (m_highVal + m_lowVal) / 2;
             }
 
             ptr += sampleBytes;
