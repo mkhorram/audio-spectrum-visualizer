@@ -18,7 +18,20 @@ void SpectrumImageGenerator::createWholeImage(int imageWidth, int imageHeight)
             m_wholeImage.setPixelColor(x, y, QColor(((x*y+100)/15)%256, ((x*y)/15)%256, ((m_wholeImageWidth*x*y)/(x+50))%256));
 }
 
-std::vector<QColor> SpectrumImageGenerator::generateRowColors(FFTAnalysisResult &bufferRow)
+void SpectrumImageGenerator::findMeanAndMaxAbsoluteValue(FFTAnalysisResult &bufferRow, double &maxVal, double &averageVal)
+{
+    maxVal = 0;
+    double sumVal = 0;
+    for (unsigned long long i = 0; i < bufferRow.rowBuffer->size(); ++i) {
+        double val = std::abs(bufferRow.rowBuffer->at(i));
+        sumVal += val;
+        if (maxVal < val)
+            maxVal = val;
+    }
+    averageVal = sumVal / bufferRow.rowBuffer->size();
+}
+
+std::vector<QColor> SpectrumImageGenerator::generateRowColors(FFTAnalysisResult &bufferRow, double &maxVal, double &averageVal)
 {
     std::vector<QColor> colors;
     for (FFTRangeToPixelMap rangeToPixel : m_FFTtoPixelConversionRanges)
@@ -30,19 +43,19 @@ std::vector<QColor> SpectrumImageGenerator::generateRowColors(FFTAnalysisResult 
         if (m_mixingType == FFTAmplitudeToPixelMixingType::Average)
         {
             for (int i=rangeToPixel.subFFTRangeStart; i<n2; ++i)
-                targetValue += std::abs(rowBuffer[i].real());
+                targetValue += std::abs(rowBuffer[i]);
             if (targetValue > 0)
                 targetValue /= (n2 - rangeToPixel.subFFTRangeStart);
         }
         else if (m_mixingType == FFTAmplitudeToPixelMixingType::MaximumValue)
         {
             for (int i=rangeToPixel.subFFTRangeStart; i<n2; ++i)
-                targetValue = std::max(std::abs(rowBuffer[i].real()), targetValue);
+                targetValue = std::max(std::abs(rowBuffer[i]), targetValue);
         }
         else if (m_mixingType == FFTAmplitudeToPixelMixingType::SquareAverage)
         {
             for (int i=rangeToPixel.subFFTRangeStart; i<n2; ++i)
-                targetValue += rowBuffer[i].real() * rowBuffer[i].real();
+                targetValue += std::abs(rowBuffer[i]);
             if (targetValue > 0)
                 targetValue = std::sqrt(targetValue / (n2 - rangeToPixel.subFFTRangeStart));
         }
@@ -69,12 +82,15 @@ void SpectrumImageGenerator::jobLoop()
             int workCounter = std::min(readableBuffer, m_rowsToBeDrawn);
             for ( int i = workCounter; i > 0; --i)
             {
-                // pick the row and buffer field
+                // pick the row
                 FFTAnalysisResult bufferRow = m_buffer[readableBuffer - i];
                 {
-                    // find the range of frequencies for every pixel
-                    // detect the highest value in the range
+                    // find the maximum and average in bufferRow
+                    double maxVal, averageVal;
+                    findMeanAndMaxAbsoluteValue(bufferRow, maxVal, averageVal);
                     // set the pixel color from formulae
+                    std::vector<QColor> colors = generateRowColors(bufferRow, maxVal, averageVal);
+                    // TODO: draw the pixels
                 }
             }
             m_rowsToBeDrawn = 0;

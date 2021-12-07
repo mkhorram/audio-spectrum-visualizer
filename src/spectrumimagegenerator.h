@@ -64,7 +64,8 @@ public:
 
 private:
     void createWholeImage(int imageWidth, int imageHeight);
-    inline std::vector<QColor> generateRowColors(FFTAnalysisResult &bufferRow);
+    void findMeanAndMaxAbsoluteValue(FFTAnalysisResult &bufferRow, double &maxVal, double &averageVal);
+    inline std::vector<QColor> generateRowColors(FFTAnalysisResult &bufferRow, double &maxVal, double &averageVal);
     void jobLoop();
 
     static void jobLoopCaller(SpectrumImageGenerator *imgGenerator)
