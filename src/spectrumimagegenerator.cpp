@@ -33,6 +33,9 @@ void SpectrumImageGenerator::findMeanAndMaxAbsoluteValue(FFTAnalysisResult &buff
 
 std::vector<QColor> SpectrumImageGenerator::generateRowColors(FFTAnalysisResult &bufferRow, double &maxVal, double &averageVal)
 {
+    double variationRange = (averageVal > 0)? 2*averageVal : 1;  // to avoid division by zero
+    if (variationRange < maxVal)
+        variationRange = (variationRange + maxVal) / 2;
     std::vector<QColor> colors;
     for (FFTRangeToPixelMap rangeToPixel : m_FFTtoPixelConversionRanges)
     {
@@ -60,10 +63,23 @@ std::vector<QColor> SpectrumImageGenerator::generateRowColors(FFTAnalysisResult 
                 targetValue = std::sqrt(targetValue / (n2 - rangeToPixel.subFFTRangeStart));
         }
         // TODO: find appropiate formulae
-        int r = targetValue;
-        int g = targetValue;
-        int b = targetValue;
-        QColor pixColor(r,g,b);
+        QColor pixColor;
+        double val = targetValue / variationRange;
+        if (val < 1)
+        {
+            double &x = val;
+            double x2 = x*x;
+            double x3 = x2*x;
+            double x4 = x2*x2;
+            double x5 = x3*x2;
+            int r = 1362.17948717951 *x5 - 3594.84265734272 *x4 + 2757.502913752978*x3 - 367.3149766900062*x2 + 96.96824009324689*x + 0.2884615384605245;
+            int g = 961.5384615384775*x5 - 480.7692307692707*x4 - 1775.932400932365*x3 + 712.8496503496364*x2 + 591.6142191142214*x + 1.223776223776065;
+            int b = 2724.35897435885 *x5 - 10482.22610722582*x4 + 15206.14801864779*x3 - 9848.557692307628*x2 + 2341.081002331004*x + 70.08741258740997;
+            pixColor = QColor(r,g,b);
+        }
+        else
+            pixColor = QColor(255,255,255);
+
         for (int j=0; j<rangeToPixel.pixelCount; ++j)
             colors.push_back(pixColor);
     }
