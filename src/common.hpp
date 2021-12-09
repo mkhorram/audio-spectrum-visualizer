@@ -25,10 +25,10 @@ enum class FFTAmplitudeToPixelMixingType
 
 struct FFTRangeToPixelMap
 {
-    int pixCol = 0;
+    int pixelStart = 0;
     int pixelCount = 0;
     long subFFTRangeStart = 0;
-    long subFFTRangeLength = 0;
+    long subFFTRangeCount = 0;
 };
 
 #endif // COMMON_H

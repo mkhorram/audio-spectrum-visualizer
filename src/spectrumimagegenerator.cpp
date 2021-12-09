@@ -15,7 +15,7 @@ void SpectrumImageGenerator::createWholeImage(int imageWidth, int imageHeight)
     // TODO: remove after the jobLoop completed
     for (int x=0; x<imageWidth; x++)
         for (int y=0; y<imageHeight; y++)
-            m_wholeImage.setPixelColor(x, y, QColor(((x*y+100)/15)%256, ((x*y)/15)%256, ((m_wholeImageWidth*x*y)/(x+50))%256));
+            m_wholeImage.setPixelColor(x, y, QColor(((x*y+100)/25)%256, ((x*y)/25)%256, ((m_wholeImageWidth*x*y+x)/(x+50))%256));
 }
 
 void SpectrumImageGenerator::findMeanAndMaxAbsoluteValue(FFTAnalysisResult &bufferRow, double &maxVal, double &averageVal)
@@ -33,34 +33,36 @@ void SpectrumImageGenerator::findMeanAndMaxAbsoluteValue(FFTAnalysisResult &buff
 
 std::vector<QColor> SpectrumImageGenerator::generateRowColors(FFTAnalysisResult &bufferRow, double &maxVal, double &averageVal)
 {
+    std::vector<std::complex<double>> &rowBuffer = *bufferRow.rowBuffer;
     double variationRange = (averageVal > 0)? 2*averageVal : 1;  // to avoid division by zero
     if (variationRange < maxVal)
         variationRange = (variationRange + maxVal) / 2;
-    std::vector<QColor> colors;
+    std::vector<QColor> colors(m_wholeImageWidth);
     for (FFTRangeToPixelMap rangeToPixel : m_FFTtoPixelConversionRanges)
     {
-        int n2 = std::min((rangeToPixel.subFFTRangeStart + 1) + rangeToPixel.subFFTRangeLength,
+        int FFTSearchEnd = std::min(rangeToPixel.subFFTRangeStart + rangeToPixel.subFFTRangeCount + 1,
                           long(bufferRow.rowBuffer->size()));
         double targetValue = 0;
-        std::vector<std::complex<double>> &rowBuffer = *bufferRow.rowBuffer;
         if (m_mixingType == FFTAmplitudeToPixelMixingType::Average)
         {
-            for (int i=rangeToPixel.subFFTRangeStart; i<n2; ++i)
+            for (int i=rangeToPixel.subFFTRangeStart; i<FFTSearchEnd; ++i)
                 targetValue += std::abs(rowBuffer[i]);
-            if (targetValue > 0)
-                targetValue /= (n2 - rangeToPixel.subFFTRangeStart);
+            if (FFTSearchEnd > rangeToPixel.subFFTRangeStart)
+                targetValue /= (FFTSearchEnd - rangeToPixel.subFFTRangeStart);
         }
         else if (m_mixingType == FFTAmplitudeToPixelMixingType::MaximumValue)
         {
-            for (int i=rangeToPixel.subFFTRangeStart; i<n2; ++i)
+            for (int i=rangeToPixel.subFFTRangeStart; i<FFTSearchEnd; ++i)
                 targetValue = std::max(std::abs(rowBuffer[i]), targetValue);
         }
         else if (m_mixingType == FFTAmplitudeToPixelMixingType::SquareAverage)
         {
-            for (int i=rangeToPixel.subFFTRangeStart; i<n2; ++i)
-                targetValue += std::abs(rowBuffer[i]);
-            if (targetValue > 0)
-                targetValue = std::sqrt(targetValue / (n2 - rangeToPixel.subFFTRangeStart));
+            for (int i=rangeToPixel.subFFTRangeStart; i<FFTSearchEnd; ++i){
+                double val = std::abs(rowBuffer[i]);
+                targetValue += val*val;
+            }
+            if (FFTSearchEnd > rangeToPixel.subFFTRangeStart)
+                targetValue = std::sqrt(targetValue / (FFTSearchEnd - rangeToPixel.subFFTRangeStart));
         }
         // TODO: find appropiate formulae
         QColor pixColor;
@@ -72,16 +74,18 @@ std::vector<QColor> SpectrumImageGenerator::generateRowColors(FFTAnalysisResult 
             double x3 = x2*x;
             double x4 = x2*x2;
             double x5 = x3*x2;
-            int r = 1362.17948717951 *x5 - 3594.84265734272 *x4 + 2757.502913752978*x3 - 367.3149766900062*x2 + 96.96824009324689*x + 0.2884615384605245;
-            int g = 961.5384615384775*x5 - 480.7692307692707*x4 - 1775.932400932365*x3 + 712.8496503496364*x2 + 591.6142191142214*x + 1.223776223776065;
-            int b = 2724.35897435885 *x5 - 10482.22610722582*x4 + 15206.14801864779*x3 - 9848.557692307628*x2 + 2341.081002331004*x + 70.08741258740997;
+            int r = int(1362.17948717951 *x5 - 3594.84265734272 *x4 + 2757.502913752978*x3 - 367.3149766900062*x2 + 96.96824009324689*x + 0.2884615384605245);
+            int g = int(961.5384615384775*x5 - 480.7692307692707*x4 - 1775.932400932365*x3 + 712.8496503496364*x2 + 591.6142191142214*x + 1.223776223776065);
+            int b = int(2724.35897435885 *x5 - 10482.22610722582*x4 + 15206.14801864779*x3 - 9848.557692307628*x2 + 2341.081002331004*x + 70.08741258740997);
             pixColor = QColor(r,g,b);
         }
         else
             pixColor = QColor(255,255,255);
 
-        for (int j=0; j<rangeToPixel.pixelCount; ++j)
-            colors.push_back(pixColor);
+        int pixelSearchEnd = std::min(rangeToPixel.pixelStart + rangeToPixel.pixelCount + 1, m_wholeImageWidth);
+        for (int i=rangeToPixel.pixelStart; i<pixelSearchEnd; ++i)
+            if (i < m_wholeImageWidth)
+                colors.at(i) = pixColor;
     }
     return colors;
 }
