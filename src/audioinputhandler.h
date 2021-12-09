@@ -27,7 +27,7 @@ private:
     int m_channel = 0;
 
     unsigned long long m_frequencyNeededSamples;
-    unsigned long long m_frequencySampleCount;
+    unsigned long long m_frequencySampleCount = 0;
 
     const unsigned long long m_buf_length;
     char * m_buf;
@@ -66,6 +66,7 @@ public:
 private:
     void checkActualSampleRate(unsigned long long receivedBytesCount);
     inline void computeFFT();
+    void reset();
 
     template <typename T>
     long castDataToDouble(char * data, long len)

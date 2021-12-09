@@ -28,7 +28,6 @@ bool AudioInputHandler::start(QAudioFormat format, QAudioDeviceInfo audioDeviceI
     m_FFTSamples.resize(m_FFTNeededSamples);
 
     m_frequencyNeededSamples = frequencyNeededSamples;
-    m_frequencySampleCount = 0;
 
     m_audioDeviceInfo = audioDeviceInfo;
     if (m_audioDeviceInfo.isNull() || !m_format.isValid())
@@ -55,6 +54,13 @@ void AudioInputHandler::stop()
     m_AudioInput->stop();
     m_AudioInput->deleteLater();
     m_AudioInput = nullptr;
+    reset();
+}
+
+void AudioInputHandler::reset()
+{
+    m_FFTSamplesWritePoint = 0;
+    m_frequencySampleCount = 0;
 }
 
 void AudioInputHandler::checkActualSampleRate(unsigned long long numSamples)
