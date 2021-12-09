@@ -93,7 +93,7 @@ private:
 
             if (m_highVal < val)
                 m_highVal = val;
-            else if (m_lowVal > val)
+            if (m_lowVal > val)
                 m_lowVal = val;
 
             m_FFTSamples[m_FFTSamplesWritePoint] = val;
@@ -106,7 +106,9 @@ private:
                 m_FFTSamplesWritePoint = 0;
 
                 emit lowHighSampleValuesComputed(m_lowVal, m_highVal);
-                m_highVal = m_lowVal = (m_highVal + m_lowVal) / 2;
+                double swapHighLow = m_highVal;
+                m_highVal = m_lowVal;
+                m_lowVal = swapHighLow;
             }
 
             ptr += sampleBytes;
